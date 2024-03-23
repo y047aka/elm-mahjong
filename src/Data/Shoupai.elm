@@ -1,6 +1,7 @@
 module Data.Shoupai exposing (Shoupai, init)
 
 import Data.Tile exposing (Tile(..), isHonour, isMan, isPin, isSou)
+import List.Extra
 
 
 type alias Shoupai =
@@ -12,7 +13,7 @@ type alias Shoupai =
         , honour : List Tile -- 字牌
         }
     , fulou : List String -- 副露面子
-    , zimo : String -- ツモ牌
+    , zimo : Maybe Tile -- ツモ牌
     , lizhi : Bool -- リーチしている時 True
     }
 
@@ -26,7 +27,7 @@ init qipai =
         , honour = List.filter isHonour qipai
         }
     , fulou = []
-    , zimo = ""
+    , zimo = Nothing
     , lizhi = False
     }
 
@@ -51,5 +52,29 @@ zimo tile shoupai =
 
                 Honour _ ->
                     { bingpai | honour = bingpai.honour ++ [ tile ] }
-        , zimo = tile
+        , zimo = Just tile
+    }
+
+
+dapai : Tile -> Shoupai -> Shoupai
+dapai tile shoupai =
+    let
+        bingpai =
+            shoupai.bingpai
+    in
+    { shoupai
+        | bingpai =
+            case tile of
+                Man _ ->
+                    { bingpai | man = List.Extra.remove tile bingpai.man }
+
+                Pin _ ->
+                    { bingpai | pin = List.Extra.remove tile bingpai.pin }
+
+                Sou _ ->
+                    { bingpai | sou = List.Extra.remove tile bingpai.sou }
+
+                Honour _ ->
+                    { bingpai | honour = List.Extra.remove tile bingpai.honour }
+        , zimo = Nothing
     }

@@ -5,8 +5,7 @@ type Tile
     = Man Number
     | Pin Number
     | Sou Number
-    | Wind Wind
-    | Dragon Dragon
+    | Honour Honour
 
 
 type Number
@@ -21,14 +20,11 @@ type Number
     | Nine
 
 
-type Wind
+type Honour
     = East
     | South
     | West
     | North
-
-
-type Dragon
-    = Red
+    | Red
     | Green
     | White

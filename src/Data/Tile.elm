@@ -1,12 +1,14 @@
 module Data.Tile exposing
     ( Tile(..)
     , isMan, isPin, isSou, isHonour
+    , isTerminal, isYaojiu
     )
 
 {-|
 
 @docs Tile
 @docs isMan, isPin, isSou, isHonour
+@docs isTerminal, isYaojiu
 
 -}
 
@@ -35,9 +37,9 @@ type Honour
     | South
     | West
     | North
-    | Red
-    | Green
     | White
+    | Green
+    | Red
 
 
 isMan : Tile -> Bool
@@ -78,3 +80,13 @@ isHonour tile =
 
         _ ->
             False
+
+
+isTerminal : Tile -> Bool
+isTerminal tile =
+    List.member tile [ Man One, Man Nine, Pin One, Pin Nine, Sou One, Sou Nine ]
+
+
+isYaojiu : Tile -> Bool
+isYaojiu tile =
+    isTerminal tile || isHonour tile

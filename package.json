@@ -1,0 +1,9 @@
+{
+  "name": "elm-mahjong",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-6"
+  }
+}

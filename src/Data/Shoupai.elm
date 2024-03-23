@@ -1,14 +1,15 @@
-module Data.Shoupai exposing (dummy)
+module Data.Shoupai exposing (Shoupai, init)
+
+import Data.Tile exposing (Tile, isMan, isPin, isSou, isHonour)
 
 
 type alias Shoupai =
     { -- 副露牌を含まない手牌の枚数
       bingpai :
-        { underscore : Int -- 伏せた牌（他者の手牌の時に使う）
-        , m : List Int -- 萬子（添字0は赤牌）
-        , p : List Int -- 筒子（添字0は赤牌）
-        , s : List Int -- 索子（添字0は赤牌）
-        , z : List Int -- 字牌
+        { man : List Tile -- 萬子（添字0は赤牌）
+        , pin : List Tile -- 筒子（添字0は赤牌）
+        , sou : List Tile -- 索子（添字0は赤牌）
+        , honour : List Tile -- 字牌
         }
     , fulou : List String -- 副露面子
     , zimo : String -- ツモ牌
@@ -16,14 +17,13 @@ type alias Shoupai =
     }
 
 
-dummy : Shoupai
-dummy =
+init : List Tile -> Shoupai
+init qipai =
     { bingpai =
-        { underscore = 0
-        , m = [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 ]
-        , p = [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 ]
-        , s = [ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 ]
-        , z = [ 0, 2, 0, 0, 0, 0, 0, 0 ]
+        { man = List.filter isMan qipai
+        , pin = List.filter isPin qipai
+        , sou = List.filter isSou qipai
+        , honour = List.filter isHonour qipai
         }
     , fulou = []
     , zimo = ""

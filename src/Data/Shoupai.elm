@@ -1,6 +1,6 @@
 module Data.Shoupai exposing (Shoupai, init)
 
-import Data.Tile exposing (Tile, isMan, isPin, isSou, isHonour)
+import Data.Tile exposing (Tile(..), isHonour, isMan, isPin, isSou)
 
 
 type alias Shoupai =
@@ -28,4 +28,28 @@ init qipai =
     , fulou = []
     , zimo = ""
     , lizhi = False
+    }
+
+
+zimo : Tile -> Shoupai -> Shoupai
+zimo tile shoupai =
+    let
+        bingpai =
+            shoupai.bingpai
+    in
+    { shoupai
+        | bingpai =
+            case tile of
+                Man _ ->
+                    { bingpai | man = bingpai.man ++ [ tile ] }
+
+                Pin _ ->
+                    { bingpai | pin = bingpai.pin ++ [ tile ] }
+
+                Sou _ ->
+                    { bingpai | sou = bingpai.sou ++ [ tile ] }
+
+                Honour _ ->
+                    { bingpai | honour = bingpai.honour ++ [ tile ] }
+        , zimo = tile
     }

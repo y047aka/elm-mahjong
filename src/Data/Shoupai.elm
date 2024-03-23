@@ -1,11 +1,13 @@
 module Data.Shoupai exposing
     ( Shoupai, init
+    , isMenqian, isLizhi
     , zimo, dapai
     )
 
 {-|
 
 @docs Shoupai, init
+@docs isMenqian, isLizhi
 @docs zimo, dapai
 
 -}
@@ -40,6 +42,16 @@ init qipai =
     , zimo = Nothing
     , lizhi = False
     }
+
+
+isMenqian : Shoupai -> Bool
+isMenqian shoupai =
+    List.isEmpty shoupai.fulou
+
+
+isLizhi : Shoupai -> Bool
+isLizhi shoupai =
+    shoupai.lizhi
 
 
 zimo : Tile -> Shoupai -> Shoupai

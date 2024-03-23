@@ -4,6 +4,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "elm": "^0.19.1-6"
+    "elm": "^0.19.1-6",
+    "elm-format": "^0.8.7"
   }
 }

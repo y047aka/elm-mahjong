@@ -1,4 +1,14 @@
-module Data.Shoupai exposing (Shoupai, init)
+module Data.Shoupai exposing
+    ( Shoupai, init
+    , zimo, dapai
+    )
+
+{-|
+
+@docs Shoupai, init
+@docs zimo, dapai
+
+-}
 
 import Data.Tile exposing (Tile(..), isHonour, isMan, isPin, isSou)
 import List.Extra

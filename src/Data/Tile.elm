@@ -1,6 +1,5 @@
 module Data.Tile exposing
-    ( Tile(..)
-    , isMan, isPin, isSou, isHonour
+    ( Tile
     , isTerminal, isYaojiu
     )
 

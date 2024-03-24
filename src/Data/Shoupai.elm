@@ -12,18 +12,12 @@ module Data.Shoupai exposing
 
 -}
 
-import Data.Tile exposing (Tile(..), isHonour, isMan, isPin, isSou)
+import Data.Tile exposing (Tile)
 import List.Extra
 
 
 type alias Shoupai =
-    { -- 副露牌を含まない手牌の枚数
-      bingpai :
-        { man : List Tile -- 萬子（添字0は赤牌）
-        , pin : List Tile -- 筒子（添字0は赤牌）
-        , sou : List Tile -- 索子（添字0は赤牌）
-        , honour : List Tile -- 字牌
-        }
+    { bingpai : List Tile -- 副露牌を含まない手牌の枚数
     , fulou : List String -- 副露面子
     , zimo : Maybe Tile -- ツモ牌
     , lizhi : Bool -- リーチしている時 True
@@ -32,12 +26,7 @@ type alias Shoupai =
 
 init : List Tile -> Shoupai
 init qipai =
-    { bingpai =
-        { man = List.filter isMan qipai
-        , pin = List.filter isPin qipai
-        , sou = List.filter isSou qipai
-        , honour = List.filter isHonour qipai
-        }
+    { bingpai = qipai
     , fulou = []
     , zimo = Nothing
     , lizhi = False
@@ -56,47 +45,15 @@ isLizhi shoupai =
 
 zimo : Tile -> Shoupai -> Shoupai
 zimo tile shoupai =
-    let
-        bingpai =
-            shoupai.bingpai
-    in
     { shoupai
-        | bingpai =
-            case tile of
-                Man _ ->
-                    { bingpai | man = bingpai.man ++ [ tile ] }
-
-                Pin _ ->
-                    { bingpai | pin = bingpai.pin ++ [ tile ] }
-
-                Sou _ ->
-                    { bingpai | sou = bingpai.sou ++ [ tile ] }
-
-                Honour _ ->
-                    { bingpai | honour = bingpai.honour ++ [ tile ] }
+        | bingpai = shoupai.bingpai ++ [ tile ]
         , zimo = Just tile
     }
 
 
 dapai : Tile -> Shoupai -> Shoupai
 dapai tile shoupai =
-    let
-        bingpai =
-            shoupai.bingpai
-    in
     { shoupai
-        | bingpai =
-            case tile of
-                Man _ ->
-                    { bingpai | man = List.Extra.remove tile bingpai.man }
-
-                Pin _ ->
-                    { bingpai | pin = List.Extra.remove tile bingpai.pin }
-
-                Sou _ ->
-                    { bingpai | sou = List.Extra.remove tile bingpai.sou }
-
-                Honour _ ->
-                    { bingpai | honour = List.Extra.remove tile bingpai.honour }
+        | bingpai = List.Extra.remove tile shoupai.bingpai
         , zimo = Nothing
     }

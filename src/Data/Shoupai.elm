@@ -1,14 +1,14 @@
 module Data.Shoupai exposing
     ( Shoupai, init
     , isMenqian, isLizhi
-    , zimo, dapai
+    , zimo, dapai, peng, chi, gang
     )
 
 {-|
 
 @docs Shoupai, init
 @docs isMenqian, isLizhi
-@docs zimo, dapai
+@docs zimo, dapai, peng, chi, gang
 
 -}
 
@@ -18,10 +18,16 @@ import List.Extra
 
 type alias Shoupai =
     { bingpai : List Tile -- 副露牌を含まない手牌の枚数
-    , fulou : List String -- 副露面子
+    , fulou : List Group -- 副露面子
     , zimo : Maybe Tile -- ツモ牌
     , lizhi : Bool -- リーチしている時 True
     }
+
+
+type Group
+    = Peng Tile Tile Tile
+    | Chi Tile Tile Tile
+    | Gang Tile Tile Tile Tile
 
 
 init : List Tile -> Shoupai
@@ -56,4 +62,38 @@ dapai tile shoupai =
     { shoupai
         | bingpai = List.Extra.remove tile shoupai.bingpai
         , zimo = Nothing
+    }
+
+
+peng : Tile -> Tile -> Tile -> Shoupai -> Shoupai
+peng t1 t2 t3 shoupai =
+    { shoupai
+        | bingpai =
+            shoupai.bingpai
+                |> List.Extra.remove t2
+                |> List.Extra.remove t3
+        , fulou = shoupai.fulou ++ [ Peng t1 t2 t3 ]
+    }
+
+
+chi : Tile -> Tile -> Tile -> Shoupai -> Shoupai
+chi t1 t2 t3 shoupai =
+    { shoupai
+        | bingpai =
+            shoupai.bingpai
+                |> List.Extra.remove t2
+                |> List.Extra.remove t3
+        , fulou = shoupai.fulou ++ [ Chi t1 t2 t3 ]
+    }
+
+
+gang : Tile -> Tile -> Tile -> Tile -> Shoupai -> Shoupai
+gang t1 t2 t3 t4 shoupai =
+    { shoupai
+        | bingpai =
+            shoupai.bingpai
+                |> List.Extra.remove t2
+                |> List.Extra.remove t3
+                |> List.Extra.remove t4
+        , fulou = shoupai.fulou ++ [ Gang t1 t2 t3 t4 ]
     }

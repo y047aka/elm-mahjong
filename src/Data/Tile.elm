@@ -76,3 +76,32 @@ isYaojiu t =
 isRedFive : Tile -> Bool
 isRedFive t =
     t.red && t.value == Five
+
+
+type alias TilesPerSuit =
+    { man : List Tile
+    , pin : List Tile
+    , sou : List Tile
+    , honor : List Tile
+    }
+
+
+partitionBySuit : List Tile -> TilesPerSuit
+partitionBySuit tiles =
+    List.foldr
+        (\t acc ->
+            case t.suit of
+                Man ->
+                    { acc | man = t :: acc.man }
+
+                Pin ->
+                    { acc | pin = t :: acc.pin }
+
+                Sou ->
+                    { acc | sou = t :: acc.sou }
+
+                Honour ->
+                    { acc | honor = t :: acc.honor }
+        )
+        { sou = [], man = [], pin = [], honor = [] }
+        tiles

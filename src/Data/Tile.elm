@@ -6,7 +6,7 @@ module Data.Tile exposing
 {-|
 
 @docs Tile
-@docs isMan, isPin, isSou, isHonour
+@docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 
 -}
@@ -20,7 +20,7 @@ type Suit
     = Man
     | Pin
     | Sou
-    | Honour
+    | Honor
 
 
 type Value
@@ -33,7 +33,7 @@ type Value
     | Seven
     | Eight
     | Nine
-      -- Honours
+      -- Honors
     | East
     | South
     | West
@@ -58,19 +58,19 @@ isSou t =
     t.suit == Sou
 
 
-isHonour : Tile -> Bool
-isHonour t =
-    t.suit == Honour
+isHonor : Tile -> Bool
+isHonor t =
+    t.suit == Honor
 
 
 isTerminal : Tile -> Bool
 isTerminal t =
-    not (isHonour t) && (t.value == One || t.value == Nine)
+    not (isHonor t) && (t.value == One || t.value == Nine)
 
 
 isYaojiu : Tile -> Bool
 isYaojiu t =
-    isHonour t || isTerminal t
+    isHonor t || isTerminal t
 
 
 isRedFive : Tile -> Bool
@@ -100,7 +100,7 @@ partitionBySuit tiles =
                 Sou ->
                     { acc | sou = t :: acc.sou }
 
-                Honour ->
+                Honor ->
                     { acc | honor = t :: acc.honor }
         )
         { sou = [], man = [], pin = [], honor = [] }

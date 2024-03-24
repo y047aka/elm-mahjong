@@ -12,14 +12,18 @@ module Data.Tile exposing
 -}
 
 
-type Tile
-    = Man Number
-    | Pin Number
-    | Sou Number
-    | Honour Honour
+type alias Tile =
+    { suit : Suit, value : Value, red : Bool }
 
 
-type Number
+type Suit
+    = Man
+    | Pin
+    | Sou
+    | Honour
+
+
+type Value
     = One
     | Two
     | Three
@@ -29,10 +33,8 @@ type Number
     | Seven
     | Eight
     | Nine
-
-
-type Honour
-    = East
+      -- Honours
+    | East
     | South
     | West
     | North
@@ -42,50 +44,35 @@ type Honour
 
 
 isMan : Tile -> Bool
-isMan tile =
-    case tile of
-        Man _ ->
-            True
-
-        _ ->
-            False
+isMan t =
+    t.suit == Man
 
 
 isPin : Tile -> Bool
-isPin tile =
-    case tile of
-        Pin _ ->
-            True
-
-        _ ->
-            False
+isPin t =
+    t.suit == Pin
 
 
 isSou : Tile -> Bool
-isSou tile =
-    case tile of
-        Sou _ ->
-            True
-
-        _ ->
-            False
+isSou t =
+    t.suit == Sou
 
 
 isHonour : Tile -> Bool
-isHonour tile =
-    case tile of
-        Honour _ ->
-            True
-
-        _ ->
-            False
+isHonour t =
+    t.suit == Honour
 
 
 isTerminal : Tile -> Bool
-isTerminal tile =
-    List.member tile [ Man One, Man Nine, Pin One, Pin Nine, Sou One, Sou Nine ]
+isTerminal t =
+    not (isHonour t) && (t.value == One || t.value == Nine)
 
 
 isYaojiu : Tile -> Bool
-isYaojiu tile =
-    isTerminal tile || isHonour tile
+isYaojiu t =
+    isHonour t || isTerminal t
+
+
+isRedFive : Tile -> Bool
+isRedFive t =
+    t.red && t.value == Five

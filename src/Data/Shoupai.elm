@@ -12,6 +12,7 @@ module Data.Shoupai exposing
 
 -}
 
+import Data.Group exposing (Group(..))
 import Data.Tile exposing (Tile)
 import List.Extra
 
@@ -22,12 +23,6 @@ type alias Shoupai =
     , zimo : Maybe Tile -- ツモ牌
     , lizhi : Bool -- リーチしている時 True
     }
-
-
-type Group
-    = Peng Tile Tile Tile
-    | Chi Tile Tile Tile
-    | Gang Tile Tile Tile Tile
 
 
 init : List Tile -> Shoupai

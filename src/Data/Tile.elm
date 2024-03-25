@@ -43,6 +43,58 @@ type Value
     | Red
 
 
+valueToInt : Tile -> Int
+valueToInt tile =
+    case tile.value of
+        One ->
+            1
+
+        Two ->
+            2
+
+        Three ->
+            3
+
+        Four ->
+            4
+
+        Five ->
+            5
+
+        Six ->
+            6
+
+        Seven ->
+            7
+
+        Eight ->
+            8
+
+        Nine ->
+            9
+
+        East ->
+            1
+
+        South ->
+            2
+
+        West ->
+            3
+
+        North ->
+            4
+
+        Red ->
+            5
+
+        Green ->
+            6
+
+        White ->
+            7
+
+
 isMan : Tile -> Bool
 isMan t =
     t.suit == Man
@@ -76,6 +128,19 @@ isYaojiu t =
 isRedFive : Tile -> Bool
 isRedFive t =
     t.red && t.value == Five
+
+
+isTriplet : ( Tile, Tile, Tile ) -> Bool
+isTriplet ( a, b, c ) =
+    (a.suit == b.suit && b.suit == c.suit)
+        && (a.value == b.value && b.value == c.value)
+
+
+isRun : ( Tile, Tile, Tile ) -> Bool
+isRun ( a, b, c ) =
+    not (isHonor a)
+        && (a.suit == b.suit && b.suit == c.suit)
+        && (valueToInt a + 1 == valueToInt b && valueToInt b + 1 == valueToInt c)
 
 
 type alias TilesPerSuit =

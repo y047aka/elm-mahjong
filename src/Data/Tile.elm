@@ -13,10 +13,10 @@ module Data.Tile exposing
 
 
 type alias Tile =
-    { suit : Suit, value : Value, red : Bool }
+    { category : Category, value : Value, red : Bool }
 
 
-type Suit
+type Category
     = Man
     | Pin
     | Sou
@@ -97,22 +97,22 @@ valueToInt tile =
 
 isMan : Tile -> Bool
 isMan t =
-    t.suit == Man
+    t.category == Man
 
 
 isPin : Tile -> Bool
 isPin t =
-    t.suit == Pin
+    t.category == Pin
 
 
 isSou : Tile -> Bool
 isSou t =
-    t.suit == Sou
+    t.category == Sou
 
 
 isHonor : Tile -> Bool
 isHonor t =
-    t.suit == Honor
+    t.category == Honor
 
 
 isTerminal : Tile -> Bool
@@ -132,18 +132,18 @@ isRedFive t =
 
 isTriplet : ( Tile, Tile, Tile ) -> Bool
 isTriplet ( a, b, c ) =
-    (a.suit == b.suit && b.suit == c.suit)
+    (a.category == b.category && b.category == c.category)
         && (a.value == b.value && b.value == c.value)
 
 
 isRun : ( Tile, Tile, Tile ) -> Bool
 isRun ( a, b, c ) =
     not (isHonor a)
-        && (a.suit == b.suit && b.suit == c.suit)
+        && (a.category == b.category && b.category == c.category)
         && (valueToInt a + 1 == valueToInt b && valueToInt b + 1 == valueToInt c)
 
 
-type alias TilesPerSuit =
+type alias TilesPerCategory =
     { man : List Tile
     , pin : List Tile
     , sou : List Tile
@@ -151,11 +151,11 @@ type alias TilesPerSuit =
     }
 
 
-partitionBySuit : List Tile -> TilesPerSuit
-partitionBySuit tiles =
+partitionByCategory : List Tile -> TilesPerCategory
+partitionByCategory tiles =
     List.foldr
         (\t acc ->
-            case t.suit of
+            case t.category of
                 Man ->
                     { acc | man = t :: acc.man }
 

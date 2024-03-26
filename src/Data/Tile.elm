@@ -115,9 +115,14 @@ isHonor t =
     t.category == Honor
 
 
+isSuit : Tile -> Bool
+isSuit t =
+    t.category /= Honor
+
+
 isTerminal : Tile -> Bool
 isTerminal t =
-    not (isHonor t) && (t.value == One || t.value == Nine)
+    isSuit t && (t.value == One || t.value == Nine)
 
 
 isYaojiu : Tile -> Bool
@@ -138,8 +143,7 @@ isTriplet ( a, b, c ) =
 
 isRun : ( Tile, Tile, Tile ) -> Bool
 isRun ( a, b, c ) =
-    not (isHonor a)
-        && (a.category == b.category && b.category == c.category)
+    (isSuit a && a.category == b.category && b.category == c.category)
         && (valueToInt a + 1 == valueToInt b && valueToInt b + 1 == valueToInt c)
 
 

@@ -85,13 +85,13 @@ valueToInt tile =
         North ->
             4
 
-        Red ->
+        White ->
             5
 
         Green ->
             6
 
-        White ->
+        Red ->
             7
 
 

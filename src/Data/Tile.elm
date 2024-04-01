@@ -147,6 +147,62 @@ isRun ( a, b, c ) =
         && (valueToInt a + 1 == valueToInt b && valueToInt b + 1 == valueToInt c)
 
 
+sort : List Tile -> List Tile
+sort tiles =
+    let
+        toComparable t =
+            case t.value of
+                One ->
+                    1
+
+                Two ->
+                    2
+
+                Three ->
+                    3
+
+                Four ->
+                    4
+
+                Five ->
+                    5
+
+                Six ->
+                    6
+
+                Seven ->
+                    7
+
+                Eight ->
+                    8
+
+                Nine ->
+                    9
+
+                East ->
+                    10
+
+                South ->
+                    11
+
+                West ->
+                    12
+
+                North ->
+                    13
+
+                White ->
+                    14
+
+                Green ->
+                    15
+
+                Red ->
+                    16
+    in
+    List.sortBy toComparable tiles
+
+
 type alias TilesPerCategory =
     { man : List Tile
     , pin : List Tile

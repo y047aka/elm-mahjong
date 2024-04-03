@@ -13,8 +13,15 @@ type Group
     | Kanchan Tile Tile
 
 
-fromTiles : List Tile -> Maybe Group
-fromTiles tiles =
+findGroups : List Tile -> List (List Group)
+findGroups tiles =
+    tiles
+        |> List.Extra.permutations
+        |> List.map (List.Extra.greedyGroupsOf 3 >> List.filterMap findGroup)
+
+
+findGroup : List Tile -> Maybe Group
+findGroup tiles =
     case tiles of
         t1 :: t2 :: [] ->
             fromTuple2 ( t1, t2 )

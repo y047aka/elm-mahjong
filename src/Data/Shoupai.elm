@@ -67,7 +67,7 @@ peng t1 t2 t3 shoupai =
             shoupai.bingpai
                 |> List.Extra.remove t2
                 |> List.Extra.remove t3
-        , fulou = shoupai.fulou ++ [ Peng t1 t2 t3 ]
+        , fulou = shoupai.fulou ++ [ Triplet t1 t2 t3 ]
     }
 
 
@@ -78,7 +78,7 @@ chi t1 t2 t3 shoupai =
             shoupai.bingpai
                 |> List.Extra.remove t2
                 |> List.Extra.remove t3
-        , fulou = shoupai.fulou ++ [ Chi t1 t2 t3 ]
+        , fulou = shoupai.fulou ++ [ Run t1 t2 t3 ]
     }
 
 

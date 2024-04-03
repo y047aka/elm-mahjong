@@ -1,6 +1,7 @@
 module Data.Tile exposing
     ( Tile
     , isTerminal, isYaojiu
+    , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     )
 
 {-|
@@ -8,6 +9,7 @@ module Data.Tile exposing
 @docs Tile
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
+@docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
 
 -}
 
@@ -145,6 +147,29 @@ isRun : ( Tile, Tile, Tile ) -> Bool
 isRun ( a, b, c ) =
     (isSuit a && a.category == b.category && b.category == c.category)
         && (valueToInt a + 1 == valueToInt b && valueToInt b + 1 == valueToInt c)
+
+
+isGang : Tile -> Tile -> Tile -> Tile -> Bool
+isGang a b c d =
+    (a.category == b.category && b.category == c.category && c.category == d.category)
+        && (a.value == b.value && b.value == c.value && c.value == d.value)
+
+
+isPair : ( Tile, Tile ) -> Bool
+isPair ( a, b ) =
+    a.category == b.category && a.value == b.value
+
+
+isPenchan : ( Tile, Tile ) -> Bool
+isPenchan ( a, b ) =
+    (isSuit a && a.category == b.category)
+        && (valueToInt a + 1 == valueToInt b)
+
+
+isKanchan : ( Tile, Tile ) -> Bool
+isKanchan ( a, b ) =
+    (isSuit a && a.category == b.category)
+        && (valueToInt a + 2 == valueToInt b)
 
 
 sort : List Tile -> List Tile

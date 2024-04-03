@@ -1,13 +1,63 @@
 module Data.Group exposing (Group(..))
 
-import Data.Tile exposing (Tile)
+import Data.Tile as Tile exposing (Tile)
 import List.Extra
 
 
 type Group
-    = Peng Tile Tile Tile
-    | Chi Tile Tile Tile
+    = Triplet Tile Tile Tile
+    | Run Tile Tile Tile
     | Gang Tile Tile Tile Tile
+    | Pair Tile Tile
+    | Penchan Tile Tile
+    | Kanchan Tile Tile
+
+
+fromTiles : List Tile -> Maybe Group
+fromTiles tiles =
+    case tiles of
+        t1 :: t2 :: [] ->
+            fromTuple2 ( t1, t2 )
+
+        t1 :: t2 :: t3 :: [] ->
+            fromTuple3 ( t1, t2, t3 )
+
+        t1 :: t2 :: t3 :: t4 :: [] ->
+            if Tile.isGang t1 t2 t3 t4 then
+                Just (Gang t1 t2 t3 t4)
+
+            else
+                Nothing
+
+        _ ->
+            Nothing
+
+
+fromTuple3 : ( Tile, Tile, Tile ) -> Maybe Group
+fromTuple3 (( t1, t2, t3 ) as tuple3) =
+    if Tile.isTriplet tuple3 then
+        Just (Triplet t1 t2 t3)
+
+    else if Tile.isRun tuple3 then
+        Just (Run t1 t2 t3)
+
+    else
+        Nothing
+
+
+fromTuple2 : ( Tile, Tile ) -> Maybe Group
+fromTuple2 (( t1, t2 ) as tuple2) =
+    if Tile.isPair tuple2 then
+        Just (Pair t1 t2)
+
+    else if Tile.isPenchan tuple2 then
+        Just (Penchan t1 t2)
+
+    else if Tile.isKanchan tuple2 then
+        Just (Kanchan t1 t2)
+
+    else
+        Nothing
 
 
 uniqueDuizis : List Tile -> List ( Tile, Tile )

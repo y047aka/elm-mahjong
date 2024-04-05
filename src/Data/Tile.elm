@@ -174,7 +174,7 @@ isKanchan ( a, b ) =
         && (valueToInt a + 2 == valueToInt b)
 
 
-{-| 萬子(Manzu)：
+{-| 萬子(Manzu):
 
     Tile Man One False |> toString --> "m1"
     Tile Man Two False |> toString --> "m2"
@@ -186,15 +186,15 @@ isKanchan ( a, b ) =
     Tile Man Eight False |> toString --> "m8"
     Tile Man Nine False |> toString --> "m9"
 
-    筒子(Pinzu)：
+    筒子(Pinzu):
 
     Tile Pin One False |> toString --> "p1"
 
-    索子(Souzu)：
+    索子(Souzu):
 
     Tile Sou One False |> toString --> "s1"
 
-    字牌(Honor)：
+    字牌(Honor):
 
     Tile Honor East False |> toString --> "z1"
     Tile Honor South False |> toString --> "z2"

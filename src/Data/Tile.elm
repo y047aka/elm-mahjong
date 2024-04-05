@@ -1,15 +1,17 @@
 module Data.Tile exposing
-    ( Tile
+    ( Tile, Category(..), Value(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
+    , toString
     )
 
 {-|
 
-@docs Tile
+@docs Tile, Category, Value
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
+@docs toString
 
 -}
 
@@ -170,6 +172,32 @@ isKanchan : ( Tile, Tile ) -> Bool
 isKanchan ( a, b ) =
     (isSuit a && a.category == b.category)
         && (valueToInt a + 2 == valueToInt b)
+
+
+toString : Tile -> String
+toString tile =
+    categoryToString tile.category ++ valueToString tile
+
+
+categoryToString : Category -> String
+categoryToString category =
+    case category of
+        Man ->
+            "m"
+
+        Pin ->
+            "p"
+
+        Sou ->
+            "s"
+
+        Honor ->
+            "z"
+
+
+valueToString : Tile -> String
+valueToString tile =
+    valueToInt tile |> String.fromInt
 
 
 sort : List Tile -> List Tile

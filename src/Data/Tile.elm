@@ -174,6 +174,37 @@ isKanchan ( a, b ) =
         && (valueToInt a + 2 == valueToInt b)
 
 
+{-| 萬子(Manzu)：
+
+    Tile Man One False |> toString --> "m1"
+    Tile Man Two False |> toString --> "m2"
+    Tile Man Three False |> toString --> "m3"
+    Tile Man Four False |> toString --> "m4"
+    Tile Man Five False |> toString --> "m5"
+    Tile Man Six False |> toString --> "m6"
+    Tile Man Seven False |> toString --> "m7"
+    Tile Man Eight False |> toString --> "m8"
+    Tile Man Nine False |> toString --> "m9"
+
+    筒子(Pinzu)：
+
+    Tile Pin One False |> toString --> "p1"
+
+    索子(Souzu)：
+
+    Tile Sou One False |> toString --> "s1"
+
+    字牌(Honor)：
+
+    Tile Honor East False |> toString --> "z1"
+    Tile Honor South False |> toString --> "z2"
+    Tile Honor West False |> toString --> "z3"
+    Tile Honor North False |> toString --> "z4"
+    Tile Honor White False |> toString --> "z5"
+    Tile Honor Green False |> toString --> "z6"
+    Tile Honor Red False |> toString --> "z7"
+
+-}
 toString : Tile -> String
 toString tile =
     categoryToString tile.category ++ valueToString tile

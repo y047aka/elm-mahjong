@@ -12,5 +12,5 @@ suite =
             \_ ->
                 Tile Man One False
                     |> Tile.toString
-                    |> Expect.equal "m1"
+                    |> Expect.equal "1m"
         ]

@@ -2,7 +2,7 @@ module Data.Tile exposing
     ( Tile, Category(..), Value(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-    , toString
+    , toString, fromString
     )
 
 {-|
@@ -11,7 +11,7 @@ module Data.Tile exposing
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-@docs toString
+@docs toString, fromString
 
 -}
 
@@ -229,6 +229,132 @@ categoryToString category =
 valueToString : Tile -> String
 valueToString tile =
     valueToInt tile |> String.fromInt
+
+
+{-| 萬子(Manzu):
+
+    fromString "m1" --> Just (Tile Man One False)
+    fromString "m2" --> Just (Tile Man Two False)
+    fromString "m3" --> Just (Tile Man Three False)
+    fromString "m4" --> Just (Tile Man Four False)
+    fromString "m5" --> Just (Tile Man Five False)
+    fromString "m6" --> Just (Tile Man Six False)
+    fromString "m7" --> Just (Tile Man Seven False)
+    fromString "m8" --> Just (Tile Man Eight False)
+    fromString "m9" --> Just (Tile Man Nine False)
+
+    筒子(Pinzu):
+
+    fromString "p1" --> Just (Tile Pin One False)
+
+    索子(Souzu):
+
+    fromString "s1" --> Just (Tile Sou One False)
+
+    字牌(Honor):
+
+    fromString "z1" --> Just (Tile Honor East False)
+    fromString "z2" --> Just (Tile Honor South False)
+    fromString "z3" --> Just (Tile Honor West False)
+    fromString "z4" --> Just (Tile Honor North False)
+    fromString "z5" --> Just (Tile Honor White False)
+    fromString "z6" --> Just (Tile Honor Green False)
+    fromString "z7" --> Just (Tile Honor Red False)
+
+-}
+fromString : String -> Maybe Tile
+fromString string =
+    let
+        ( categoryString, valueString ) =
+            case String.toList string of
+                c :: v :: [] ->
+                    ( String.fromChar c, String.fromChar v )
+
+                _ ->
+                    ( "", "" )
+
+        maybeCategory =
+            case categoryString of
+                "m" ->
+                    Just Man
+
+                "p" ->
+                    Just Pin
+
+                "s" ->
+                    Just Sou
+
+                "z" ->
+                    Just Honor
+
+                _ ->
+                    Nothing
+
+        maybeValue =
+            maybeCategory
+                |> Maybe.andThen
+                    (\c ->
+                        case c of
+                            Honor ->
+                                case valueString of
+                                    "1" ->
+                                        Just East
+
+                                    "2" ->
+                                        Just South
+
+                                    "3" ->
+                                        Just West
+
+                                    "4" ->
+                                        Just North
+
+                                    "5" ->
+                                        Just White
+
+                                    "6" ->
+                                        Just Green
+
+                                    "7" ->
+                                        Just Red
+
+                                    _ ->
+                                        Nothing
+
+                            _ ->
+                                case valueString of
+                                    "1" ->
+                                        Just One
+
+                                    "2" ->
+                                        Just Two
+
+                                    "3" ->
+                                        Just Three
+
+                                    "4" ->
+                                        Just Four
+
+                                    "5" ->
+                                        Just Five
+
+                                    "6" ->
+                                        Just Six
+
+                                    "7" ->
+                                        Just Seven
+
+                                    "8" ->
+                                        Just Eight
+
+                                    "9" ->
+                                        Just Nine
+
+                                    _ ->
+                                        Nothing
+                    )
+    in
+    Maybe.map2 (\c v -> { category = c, value = v, red = False }) maybeCategory maybeValue
 
 
 sort : List Tile -> List Tile

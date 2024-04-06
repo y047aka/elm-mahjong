@@ -2,7 +2,7 @@ module Data.Tile exposing
     ( Tile, Category(..), Value(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-    , toString, fromString
+    , toString, fromString, tilesToString
     , sort
     )
 
@@ -12,10 +12,12 @@ module Data.Tile exposing
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-@docs toString, fromString
+@docs toString, fromString, tilesToString
 @docs sort
 
 -}
+
+import List.Extra
 
 
 type alias Tile =
@@ -357,6 +359,36 @@ fromString string =
                     )
     in
     Maybe.map2 (\c v -> { category = c, value = v, red = False }) maybeCategory maybeValue
+
+
+{-|
+
+    tilesToString [ Tile Man One False, Tile Man One False, Tile Man One False ]
+    --> "111m"
+
+    tilesToString [ Tile Man One False, Tile Man Two False, Tile Man Three False ]
+    --> "123m"
+
+    tilesToString [ Tile Sou One False, Tile Honor East False, Tile Pin Two False, Tile Man Three False, Tile Man One False ]
+    --> "13m2p1s1z"
+
+    tilesToString <|
+        [ Tile Man One False, Tile Man Nine False
+        , Tile Pin One False, Tile Pin Nine False
+        , Tile Sou One False, Tile Sou Nine False
+        , Tile Honor East False, Tile Honor South False, Tile Honor West False, Tile Honor West False, Tile Honor North False
+        , Tile Honor White False, Tile Honor Green False, Tile Honor Red False
+        ]
+    --> "19m19p19s12334567z"
+
+-}
+tilesToString : List Tile -> String
+tilesToString tiles =
+    tiles
+        |> sort
+        |> List.Extra.gatherEqualsBy .category
+        |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ categoryToString head.category)
+        |> String.concat
 
 
 {-|

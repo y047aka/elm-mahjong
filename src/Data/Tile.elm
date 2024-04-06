@@ -372,7 +372,7 @@ fromString string =
     tilesToString [ Tile Sou One False, Tile Honor East False, Tile Pin Two False, Tile Man Three False, Tile Man One False ]
     --> "13m2p1s1z"
 
-    tilesToString <|
+    tilesToString
         [ Tile Man One False, Tile Man Nine False
         , Tile Pin One False, Tile Pin Nine False
         , Tile Sou One False, Tile Sou Nine False

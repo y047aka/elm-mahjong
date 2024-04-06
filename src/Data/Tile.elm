@@ -2,8 +2,8 @@ module Data.Tile exposing
     ( Tile, Category(..), Value(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-    , toString, fromString, tilesToString
     , sort
+    , toString, fromString, tilesToString
     )
 
 {-|
@@ -12,8 +12,8 @@ module Data.Tile exposing
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-@docs toString, fromString, tilesToString
 @docs sort
+@docs toString, fromString, tilesToString
 
 -}
 
@@ -176,6 +176,78 @@ isKanchan : ( Tile, Tile ) -> Bool
 isKanchan ( a, b ) =
     (isSuit a && a.category == b.category)
         && (valueToInt a + 2 == valueToInt b)
+
+
+{-|
+
+    sort [ Tile Man Three False, Tile Man Two False, Tile Man One False ]
+    --> [ Tile Man One False, Tile Man Two False, Tile Man Three False ]
+
+    sort [ Tile Sou One False, Tile Honor East False, Tile Pin Two False, Tile Man Three False, Tile Man One False ]
+    --> [ Tile Man One False, Tile Man Three False, Tile Pin Two False, Tile Sou One False, Tile Honor East False ]
+
+-}
+sort : List Tile -> List Tile
+sort tiles =
+    tiles
+        |> partitionByCategory
+        |> (\{ man, pin, sou, honor } -> List.concatMap sortByValue [ man, pin, sou, honor ])
+
+
+sortByValue : List Tile -> List Tile
+sortByValue tiles =
+    let
+        toComparable t =
+            case t.value of
+                One ->
+                    1
+
+                Two ->
+                    2
+
+                Three ->
+                    3
+
+                Four ->
+                    4
+
+                Five ->
+                    5
+
+                Six ->
+                    6
+
+                Seven ->
+                    7
+
+                Eight ->
+                    8
+
+                Nine ->
+                    9
+
+                East ->
+                    10
+
+                South ->
+                    11
+
+                West ->
+                    12
+
+                North ->
+                    13
+
+                White ->
+                    14
+
+                Green ->
+                    15
+
+                Red ->
+                    16
+    in
+    List.sortBy toComparable tiles
 
 
 {-| 萬子(Manzu):
@@ -389,78 +461,6 @@ tilesToString tiles =
         |> List.Extra.gatherEqualsBy .category
         |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ categoryToString head.category)
         |> String.concat
-
-
-{-|
-
-    sort [ Tile Man Three False, Tile Man Two False, Tile Man One False ]
-    --> [ Tile Man One False, Tile Man Two False, Tile Man Three False ]
-
-    sort [ Tile Sou One False, Tile Honor East False, Tile Pin Two False, Tile Man Three False, Tile Man One False ]
-    --> [ Tile Man One False, Tile Man Three False, Tile Pin Two False, Tile Sou One False, Tile Honor East False ]
-
--}
-sort : List Tile -> List Tile
-sort tiles =
-    tiles
-        |> partitionByCategory
-        |> (\{ man, pin, sou, honor } -> List.concatMap sortByValue [ man, pin, sou, honor ])
-
-
-sortByValue : List Tile -> List Tile
-sortByValue tiles =
-    let
-        toComparable t =
-            case t.value of
-                One ->
-                    1
-
-                Two ->
-                    2
-
-                Three ->
-                    3
-
-                Four ->
-                    4
-
-                Five ->
-                    5
-
-                Six ->
-                    6
-
-                Seven ->
-                    7
-
-                Eight ->
-                    8
-
-                Nine ->
-                    9
-
-                East ->
-                    10
-
-                South ->
-                    11
-
-                West ->
-                    12
-
-                North ->
-                    13
-
-                White ->
-                    14
-
-                Green ->
-                    15
-
-                Red ->
-                    16
-    in
-    List.sortBy toComparable tiles
 
 
 type alias TilesPerCategory =

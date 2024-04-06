@@ -3,6 +3,7 @@ module Data.Tile exposing
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , toString, fromString
+    , sort
     )
 
 {-|
@@ -12,6 +13,7 @@ module Data.Tile exposing
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
 @docs toString, fromString
+@docs sort
 
 -}
 
@@ -357,8 +359,24 @@ fromString string =
     Maybe.map2 (\c v -> { category = c, value = v, red = False }) maybeCategory maybeValue
 
 
+{-|
+
+    sort [ Tile Man Three False, Tile Man Two False, Tile Man One False ]
+    --> [ Tile Man One False, Tile Man Two False, Tile Man Three False ]
+
+    sort [ Tile Sou One False, Tile Honor East False, Tile Pin Two False, Tile Man Three False, Tile Man One False ]
+    --> [ Tile Man One False, Tile Man Three False, Tile Pin Two False, Tile Sou One False, Tile Honor East False ]
+
+-}
 sort : List Tile -> List Tile
 sort tiles =
+    tiles
+        |> partitionByCategory
+        |> (\{ man, pin, sou, honor } -> List.concatMap sortByValue [ man, pin, sou, honor ])
+
+
+sortByValue : List Tile -> List Tile
+sortByValue tiles =
     let
         toComparable t =
             case t.value of

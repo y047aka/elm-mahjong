@@ -3,7 +3,7 @@ module Data.Tile exposing
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort
-    , toString, fromString, tilesToString
+    , toString, fromString, tilesToString, tilesFromString
     )
 
 {-|
@@ -13,11 +13,12 @@ module Data.Tile exposing
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
 @docs sort
-@docs toString, fromString, tilesToString
+@docs toString, fromString, tilesToString, tilesFromString
 
 -}
 
 import List.Extra
+import Parser exposing ((|.), (|=), Parser, Step(..))
 
 
 type alias Tile =
@@ -461,6 +462,153 @@ tilesToString tiles =
         |> List.Extra.gatherEqualsBy .category
         |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ categoryToString head.category)
         |> String.concat
+
+
+{-|
+
+    tilesFromString "111m"
+    --> [ Tile Man One False, Tile Man One False, Tile Man One False ]
+
+    tilesFromString "123m"
+    --> [ Tile Man One False, Tile Man Two False, Tile Man Three False ]
+
+    tilesFromString "13m2p1s1z"
+    --> [ Tile Man One False, Tile Man Three False, Tile Pin Two False, Tile Sou One False, Tile Honor East False ]
+
+    tilesFromString "19m19p19s12334567z"
+    --> [ Tile Man One False, Tile Man Nine False, Tile Pin One False, Tile Pin Nine False, Tile Sou One False, Tile Sou Nine False, Tile Honor East False, Tile Honor South False, Tile Honor West False, Tile Honor West False, Tile Honor North False, Tile Honor White False, Tile Honor Green False, Tile Honor Red False ]
+
+-}
+tilesFromString : String -> List Tile
+tilesFromString input =
+    case Parser.run handSuits input of
+        Ok value ->
+            value
+
+        Err _ ->
+            []
+
+
+handSuits : Parser (List Tile)
+handSuits =
+    Parser.loop [] parseHandHelper
+
+
+parseHandHelper : List Tile -> Parser (Step (List Tile) (List Tile))
+parseHandHelper parsedSuits =
+    Parser.oneOf
+        [ Parser.succeed (\hand -> Loop (List.append parsedSuits hand))
+            |= handSuit
+        , Parser.succeed ()
+            |> Parser.map (\_ -> Done parsedSuits)
+        ]
+
+
+handSuit : Parser.Parser (List Tile)
+handSuit =
+    Parser.map tilesFromSuitString <|
+        Parser.getChompedString <|
+            Parser.succeed ()
+                |. Parser.chompWhile (\c -> Char.isDigit c)
+                |. Parser.chompIf (\c -> c == 's' || c == 'm' || c == 'p' || c == 'z')
+
+
+tilesFromSuitString : String -> List Tile
+tilesFromSuitString parsedSuit =
+    let
+        maybeCategory =
+            case String.right 1 parsedSuit of
+                "m" ->
+                    Just Man
+
+                "p" ->
+                    Just Pin
+
+                "s" ->
+                    Just Sou
+
+                "z" ->
+                    Just Honor
+
+                _ ->
+                    Nothing
+
+        tiles =
+            String.dropRight 1 parsedSuit
+                |> String.toList
+                |> List.map String.fromChar
+                |> List.filterMap maybeValue
+
+        maybeValue valueString =
+            maybeCategory
+                |> Maybe.andThen
+                    (\c ->
+                        case c of
+                            Honor ->
+                                case valueString of
+                                    "1" ->
+                                        Just East
+
+                                    "2" ->
+                                        Just South
+
+                                    "3" ->
+                                        Just West
+
+                                    "4" ->
+                                        Just North
+
+                                    "5" ->
+                                        Just White
+
+                                    "6" ->
+                                        Just Green
+
+                                    "7" ->
+                                        Just Red
+
+                                    _ ->
+                                        Nothing
+
+                            _ ->
+                                case valueString of
+                                    "1" ->
+                                        Just One
+
+                                    "2" ->
+                                        Just Two
+
+                                    "3" ->
+                                        Just Three
+
+                                    "4" ->
+                                        Just Four
+
+                                    "5" ->
+                                        Just Five
+
+                                    "6" ->
+                                        Just Six
+
+                                    "7" ->
+                                        Just Seven
+
+                                    "8" ->
+                                        Just Eight
+
+                                    "9" ->
+                                        Just Nine
+
+                                    _ ->
+                                        Nothing
+                    )
+    in
+    case maybeCategory of
+        Just c ->
+            List.map (\v -> Tile c v False) tiles
+
+        Nothing ->
+            []
 
 
 type alias TilesPerCategory =

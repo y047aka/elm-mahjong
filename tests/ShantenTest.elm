@@ -32,7 +32,7 @@ suite =
                     Shanten.shantenStandard d.tiles |> .shanten |> Expect.equal d.shantenStandard
 
             -- , describe "shantenStandard 10,000 cases"
-            --     (List.indexedMap testShantenStandard (casesFromString Chinitsu.data))
+            --     test10000_shantenStandard
             ]
         , describe "shantenKokushi"
             [ fuzz oneOfKokushiData "fuzzingShantenKokushi" <|
@@ -40,7 +40,7 @@ suite =
                     Shanten.shantenKokushi d.tiles |> Expect.equal d.shantenKokushi
 
             -- , describe "shantenKokushi 10,000 cases"
-            --     (List.indexedMap testShantenKokushi (casesFromString Kokushi.data))
+            --     test10000_shantenKokushi
             ]
         , describe "shantenChiitoitsu"
             [ -- test "2 equal pairs" <|
@@ -50,9 +50,17 @@ suite =
                     Shanten.shantenChiitoitsu d.tiles |> Expect.equal d.shantenChiitoitsu
 
             -- , describe "shantenChiitoitsu 10,000 cases"
-            --     (List.indexedMap testShantenChiitoitsu (casesFromString Standard.data))
+            --     test10000_shantenChiitoitsu
             ]
         ]
+
+
+type alias Case =
+    { tiles : List Tile
+    , shantenStandard : Int
+    , shantenKokushi : Int
+    , shantenChiitoitsu : Int
+    }
 
 
 oneOfStandardData : Fuzzer Case
@@ -83,30 +91,37 @@ oneOfChinitsuData =
         |> Fuzz.map caseFromString
 
 
-testShantenStandard : Int -> Case -> Test
-testShantenStandard index q =
-    test (String.fromInt index ++ ". " ++ Tile.tilesToString q.tiles) <|
-        \_ -> Shanten.shantenStandard q.tiles |> .shanten |> Expect.equal q.shantenStandard
+test10000_shantenStandard : List Test
+test10000_shantenStandard =
+    let
+        testShantenStandard index c =
+            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
+                \_ -> Shanten.shantenStandard c.tiles |> .shanten |> Expect.equal c.shantenStandard
+    in
+    casesFromString Chinitsu.data
+        |> List.indexedMap testShantenStandard
 
 
-testShantenKokushi : Int -> Case -> Test
-testShantenKokushi index q =
-    test (String.fromInt index ++ ". " ++ Tile.tilesToString q.tiles) <|
-        \_ -> Shanten.shantenKokushi q.tiles |> Expect.equal q.shantenKokushi
+test10000_shantenKokushi : List Test
+test10000_shantenKokushi =
+    let
+        testShantenKokushi index c =
+            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
+                \_ -> Shanten.shantenKokushi c.tiles |> Expect.equal c.shantenKokushi
+    in
+    casesFromString Kokushi.data
+        |> List.indexedMap testShantenKokushi
 
 
-testShantenChiitoitsu : Int -> Case -> Test
-testShantenChiitoitsu index q =
-    test (String.fromInt index ++ ". " ++ Tile.tilesToString q.tiles) <|
-        \_ -> Shanten.shantenChiitoitsu q.tiles |> Expect.equal q.shantenChiitoitsu
-
-
-type alias Case =
-    { tiles : List Tile
-    , shantenStandard : Int
-    , shantenKokushi : Int
-    , shantenChiitoitsu : Int
-    }
+test10000_shantenChiitoitsu : List Test
+test10000_shantenChiitoitsu =
+    let
+        testShantenChiitoitsu index c =
+            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
+                \_ -> Shanten.shantenChiitoitsu c.tiles |> Expect.equal c.shantenChiitoitsu
+    in
+    casesFromString Standard.data
+        |> List.indexedMap testShantenChiitoitsu
 
 
 casesFromString : String -> List Case

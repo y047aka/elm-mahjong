@@ -4,6 +4,7 @@ module Data.Tile exposing
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort
     , toString, fromString, tilesToString, tilesFromString
+    , partitionByCategory, valueFromInt, valueToInt
     )
 
 {-|
@@ -102,6 +103,40 @@ valueToInt tile =
 
         Red ->
             7
+
+
+valueFromInt : Int -> Maybe Value
+valueFromInt value =
+    case value of
+        1 ->
+            Just One
+
+        2 ->
+            Just Two
+
+        3 ->
+            Just Three
+
+        4 ->
+            Just Four
+
+        5 ->
+            Just Five
+
+        6 ->
+            Just Six
+
+        7 ->
+            Just Seven
+
+        8 ->
+            Just Eight
+
+        9 ->
+            Just Nine
+
+        _ ->
+            Nothing
 
 
 isMan : Tile -> Bool

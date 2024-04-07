@@ -1,4 +1,4 @@
-module Data.Shanten exposing (shantenGuoshi, shantenQidui, shantenStandard)
+module Data.Shanten exposing (shantenChiitoitsu, shantenKokushi, shantenStandard)
 
 import Data.Group as Group exposing (Group)
 import Data.Tile as Tile exposing (Tile)
@@ -9,15 +9,15 @@ import List.Extra
 
     import Data.Tile exposing (tilesFromString)
 
-    shantenGuoshi (tilesFromString "19m19p19s1234567z") --> 0
-    shantenGuoshi (tilesFromString "19m119p19s134567z") --> 0
-    shantenGuoshi (tilesFromString "19m1199p19s14567z") --> 1
-    shantenGuoshi (tilesFromString "1m2223334445556s") --> 12
-    shantenGuoshi (tilesFromString "19m19p19s12334567z") --> -1
+    shantenKokushi (tilesFromString "19m19p19s1234567z") --> 0
+    shantenKokushi (tilesFromString "19m119p19s134567z") --> 0
+    shantenKokushi (tilesFromString "19m1199p19s14567z") --> 1
+    shantenKokushi (tilesFromString "1m2223334445556s") --> 12
+    shantenKokushi (tilesFromString "19m19p19s12334567z") --> -1
 
 -}
-shantenGuoshi : List Tile -> Int
-shantenGuoshi tiles =
+shantenKokushi : List Tile -> Int
+shantenKokushi tiles =
     let
         counter : List ( Tile, Int )
         counter =
@@ -43,13 +43,13 @@ shantenGuoshi tiles =
 
     import Data.Tile exposing (tilesFromString)
 
-    shantenQidui (tilesFromString "225588m11p88s223z") --> 0
-    shantenQidui (tilesFromString "225588m11p88s2233z") --> -1
-    shantenQidui (tilesFromString "2268m22334p55s11z4p") --> 0
+    shantenChiitoitsu (tilesFromString "225588m11p88s223z") --> 0
+    shantenChiitoitsu (tilesFromString "225588m11p88s2233z") --> -1
+    shantenChiitoitsu (tilesFromString "2268m22334p55s11z4p") --> 0
 
 -}
-shantenQidui : List Tile -> Int
-shantenQidui tiles =
+shantenChiitoitsu : List Tile -> Int
+shantenChiitoitsu tiles =
     let
         counter : List ( Tile, Int )
         counter =

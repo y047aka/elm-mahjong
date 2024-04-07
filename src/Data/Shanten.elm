@@ -4,6 +4,15 @@ import Data.Tile as Tile exposing (Tile)
 import List.Extra
 
 
+{-|
+
+    import Data.Tile exposing (tilesFromString)
+
+    shantenGuoshi (tilesFromString "19m19p19s1234567z") --> 0
+    shantenGuoshi (tilesFromString "12m19p19s1234567z") --> 1
+    shantenGuoshi (tilesFromString "19m19p19s12334567z") --> -1
+
+-}
 shantenGuoshi : List Tile -> Int
 shantenGuoshi tiles =
     let
@@ -27,6 +36,15 @@ shantenGuoshi tiles =
         13 - yaojiuCount
 
 
+{-|
+
+    import Data.Tile exposing (tilesFromString)
+
+    shantenQidui (tilesFromString "1122334455667m") --> 0
+    shantenQidui (tilesFromString "1122334455m12p") --> 1
+    shantenQidui (tilesFromString "11223344556677m") --> -1
+
+-}
 shantenQidui : List Tile -> Int
 shantenQidui tiles =
     let

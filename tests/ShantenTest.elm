@@ -3,12 +3,13 @@ module ShantenTest exposing (suite)
 import Data.Shanten as Shanten
 import Data.Tile as Tile exposing (Category(..), Tile, Value(..))
 import Expect
+import Fuzz exposing (Fuzzer)
 import List.Extra
 import ShantenTest.Data.Chinitsu as Chinitsu
 import ShantenTest.Data.Honitsu as Honitsu
 import ShantenTest.Data.Kokushi as Kokushi
 import ShantenTest.Data.Standard as Standard
-import Test exposing (Test, describe, test)
+import Test exposing (Test, describe, fuzz, test)
 
 
 suite : Test
@@ -25,20 +26,61 @@ suite =
                             , shantenChiitoitsu = 5
                             }
             ]
-        , describe "shantenChiitoitsu"
-            [ test "6 pairs" <|
-                \_ -> Shanten.shantenChiitoitsu (Tile.tilesFromString "225588m11p88s223z") |> Expect.equal 0
+        , describe "shantenStandard"
+            [ fuzz oneOfChinitsuData "fuzzingShantenStandard" <|
+                \d ->
+                    Shanten.shantenStandard d.tiles |> .shanten |> Expect.equal d.shantenStandard
 
-            -- , test "2 equal pairs" <|
-            --     \_ -> Shanten.shantenChiitoitsu (Tile.tilesFromString "222288m11p88s223z") |> Expect.equal 1
+            -- , describe "shantenStandard 10,000 cases"
+            --     (List.indexedMap testShantenStandard (casesFromString Chinitsu.data))
             ]
-        , describe "testShantenKokushi"
-            (List.indexedMap testShantenKokushi (casesFromString Kokushi.data))
-        , describe "testShantenChiitoitsu"
-            (List.indexedMap testShantenChiitoitsu (casesFromString Standard.data))
-        , describe "testShantenStandard"
-            (List.indexedMap testShantenStandard (casesFromString Chinitsu.data))
+        , describe "shantenKokushi"
+            [ fuzz oneOfKokushiData "fuzzingShantenKokushi" <|
+                \d ->
+                    Shanten.shantenKokushi d.tiles |> Expect.equal d.shantenKokushi
+
+            -- , describe "shantenKokushi 10,000 cases"
+            --     (List.indexedMap testShantenKokushi (casesFromString Kokushi.data))
+            ]
+        , describe "shantenChiitoitsu"
+            [ -- test "2 equal pairs" <|
+              --     \_ -> Shanten.shantenChiitoitsu (Tile.tilesFromString "222288m11p88s223z") |> Expect.equal 1
+              fuzz oneOfStandardData "fuzzingShantenChiitoitsu" <|
+                \d ->
+                    Shanten.shantenChiitoitsu d.tiles |> Expect.equal d.shantenChiitoitsu
+
+            -- , describe "shantenChiitoitsu 10,000 cases"
+            --     (List.indexedMap testShantenChiitoitsu (casesFromString Standard.data))
+            ]
         ]
+
+
+oneOfStandardData : Fuzzer Case
+oneOfStandardData =
+    List.map Fuzz.constant (String.lines Standard.data)
+        |> Fuzz.oneOf
+        |> Fuzz.map caseFromString
+
+
+oneOfKokushiData : Fuzzer Case
+oneOfKokushiData =
+    List.map Fuzz.constant (String.lines Kokushi.data)
+        |> Fuzz.oneOf
+        |> Fuzz.map caseFromString
+
+
+oneOfHonitsuData : Fuzzer Case
+oneOfHonitsuData =
+    List.map Fuzz.constant (String.lines Honitsu.data)
+        |> Fuzz.oneOf
+        |> Fuzz.map caseFromString
+
+
+oneOfChinitsuData : Fuzzer Case
+oneOfChinitsuData =
+    List.map Fuzz.constant (String.lines Chinitsu.data)
+        |> Fuzz.oneOf
+        |> Fuzz.map caseFromString
 
 
 testShantenStandard : Int -> Case -> Test

@@ -10,7 +10,9 @@ import List.Extra
     import Data.Tile exposing (tilesFromString)
 
     shantenGuoshi (tilesFromString "19m19p19s1234567z") --> 0
-    shantenGuoshi (tilesFromString "12m19p19s1234567z") --> 1
+    shantenGuoshi (tilesFromString "19m119p19s134567z") --> 0
+    shantenGuoshi (tilesFromString "19m1199p19s14567z") --> 1
+    shantenGuoshi (tilesFromString "1m2223334445556s") --> 12
     shantenGuoshi (tilesFromString "19m19p19s12334567z") --> -1
 
 -}
@@ -41,9 +43,9 @@ shantenGuoshi tiles =
 
     import Data.Tile exposing (tilesFromString)
 
-    shantenQidui (tilesFromString "1122334455667m") --> 0
-    shantenQidui (tilesFromString "1122334455m12p") --> 1
-    shantenQidui (tilesFromString "11223344556677m") --> -1
+    shantenQidui (tilesFromString "225588m11p88s223z") --> 0
+    shantenQidui (tilesFromString "225588m11p88s2233z") --> -1
+    shantenQidui (tilesFromString "2268m22334p55s11z4p") --> 0
 
 -}
 shantenQidui : List Tile -> Int
@@ -80,8 +82,10 @@ type alias ShantenCalculation =
 
     import Data.Tile exposing (tilesFromString)
 
-    shantenStandard (tilesFromString "12389m456p12789s1z") |> .shanten --> 1
-    shantenStandard (tilesFromString "12389m456p1289s11z") |> .shanten --> 1
+    shantenStandard (tilesFromString "46789m55779p457s") |> .shanten --> 2
+    shantenStandard (tilesFromString "456m567p12388s77z") |> .shanten --> 0
+    shantenStandard (tilesFromString "11122456677889p") |> .shanten --> -1
+    shantenStandard (tilesFromString "3367m11123p1267s3m") |> .shanten --> 1
 
 -}
 shantenStandard : List Tile -> ShantenCalculation

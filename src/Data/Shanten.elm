@@ -2,7 +2,6 @@ module Data.Shanten exposing (shantenChiitoitsu, shantenKokushi, shantenStandard
 
 import Data.Group as Group exposing (Group)
 import Data.Tile as Tile exposing (Tile)
-import List.Extra
 
 
 {-|
@@ -19,12 +18,10 @@ import List.Extra
 shantenKokushi : List Tile -> Int
 shantenKokushi tiles =
     let
-        counter : List ( Tile, Int )
         counter =
             tiles
                 |> List.filter Tile.isYaojiu
-                |> List.Extra.gatherEquals
-                |> List.map (\( head, tails ) -> ( head, 1 + List.length tails ))
+                |> Tile.countTiles
 
         yaojiuCount =
             List.length counter
@@ -51,11 +48,8 @@ shantenKokushi tiles =
 shantenChiitoitsu : List Tile -> Int
 shantenChiitoitsu tiles =
     let
-        counter : List ( Tile, Int )
         counter =
-            tiles
-                |> List.Extra.gatherEquals
-                |> List.map (\( head, tails ) -> ( head, 1 + List.length tails ))
+            Tile.countTiles tiles
 
         duiziCount =
             List.length <| List.filter (\( _, count ) -> count >= 2) counter

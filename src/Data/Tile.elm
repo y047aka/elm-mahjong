@@ -2,7 +2,7 @@ module Data.Tile exposing
     ( Tile, Category(..), Value(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-    , sort
+    , sort, countTiles
     , toString, fromString, tilesToString, tilesFromString
     , partitionByCategory, valueFromInt, valueToInt
     )
@@ -13,7 +13,7 @@ module Data.Tile exposing
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
-@docs sort
+@docs sort, countTiles
 @docs toString, fromString, tilesToString, tilesFromString
 
 -}
@@ -284,6 +284,12 @@ sortByValue tiles =
                     16
     in
     List.sortBy toComparable tiles
+
+
+countTiles : List Tile -> List ( Tile, Int )
+countTiles tiles =
+    List.Extra.gatherEquals tiles
+        |> List.map (\( head, tails ) -> ( head, 1 + List.length tails ))
 
 
 {-| 萬子(Manzu):

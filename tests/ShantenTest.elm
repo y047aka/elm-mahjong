@@ -43,9 +43,7 @@ suite =
             --     test10000_shantenKokushi
             ]
         , describe "shantenChiitoitsu"
-            [ -- test "2 equal pairs" <|
-              --     \_ -> Shanten.shantenChiitoitsu (Tile.tilesFromString "222288m11p88s223z") |> Expect.equal 1
-              fuzz oneOfStandardData "fuzzingShantenChiitoitsu" <|
+            [ fuzz oneOfStandardData "fuzzingShantenChiitoitsu" <|
                 \d ->
                     Shanten.shantenChiitoitsu d.tiles |> Expect.equal d.shantenChiitoitsu
 

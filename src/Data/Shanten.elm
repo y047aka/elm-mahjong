@@ -41,6 +41,7 @@ shantenKokushi tiles =
     import Data.Tile exposing (tilesFromString)
 
     shantenChiitoitsu (tilesFromString "225588m11p88s223z") --> 0
+    shantenChiitoitsu (tilesFromString "222288m11p88s223z") --> 2
     shantenChiitoitsu (tilesFromString "225588m11p88s2233z") --> -1
     shantenChiitoitsu (tilesFromString "2268m22334p55s11z4p") --> 0
 

@@ -1,5 +1,5 @@
 module Data.Tile exposing
-    ( Tile(..), Category(..)
+    ( Tile(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort, countTiles
@@ -9,7 +9,7 @@ module Data.Tile exposing
 
 {-|
 
-@docs Tile, Category
+@docs Tile
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
@@ -18,6 +18,7 @@ module Data.Tile exposing
 
 -}
 
+import Data.Category as Category exposing (Category(..))
 import List.Extra
 import Parser exposing ((|.), (|=), Parser, Step(..))
 
@@ -353,17 +354,17 @@ isRedFive t =
 
 isSameCategory2 : Tile -> Tile -> Bool
 isSameCategory2 a b =
-    categoryFromTile a == categoryFromTile b
+    Category.isSameCategory2 (toCategory a) (toCategory b)
 
 
 isSameCategory3 : Tile -> Tile -> Tile -> Bool
 isSameCategory3 a b c =
-    categoryFromTile a == categoryFromTile b && categoryFromTile b == categoryFromTile c
+    Category.isSameCategory3 (toCategory a) (toCategory b) (toCategory c)
 
 
 isSameCategory4 : Tile -> Tile -> Tile -> Tile -> Bool
 isSameCategory4 a b c d =
-    (categoryFromTile a == categoryFromTile b) && (categoryFromTile b == categoryFromTile c) && (categoryFromTile c == categoryFromTile d)
+    Category.isSameCategory4 (toCategory a) (toCategory b) (toCategory c) (toCategory d)
 
 
 isTriplet : ( Tile, Tile, Tile ) -> Bool
@@ -564,6 +565,21 @@ countTiles tiles =
         |> List.map (\( head, tails ) -> ( head, 1 + List.length tails ))
 
 
+toCategory : Tile -> Category
+toCategory tile =
+    if isMan tile then
+        Man
+
+    else if isPin tile then
+        Pin
+
+    else if isSou tile then
+        Sou
+
+    else
+        Honor
+
+
 {-| 萬子(Manzu):
 
     toString M1 --> "1m"
@@ -699,44 +715,6 @@ toString tile =
 
         Red ->
             "7z"
-
-
-type Category
-    = Man
-    | Pin
-    | Sou
-    | Honor
-
-
-categoryToString : Category -> String
-categoryToString category =
-    case category of
-        Man ->
-            "m"
-
-        Pin ->
-            "p"
-
-        Sou ->
-            "s"
-
-        Honor ->
-            "z"
-
-
-categoryFromTile : Tile -> Category
-categoryFromTile tile =
-    if isMan tile then
-        Man
-
-    else if isPin tile then
-        Pin
-
-    else if isSou tile then
-        Sou
-
-    else
-        Honor
 
 
 valueToString : Tile -> String
@@ -909,8 +887,8 @@ tilesToString : List Tile -> String
 tilesToString tiles =
     tiles
         |> sort
-        |> List.Extra.gatherEqualsBy categoryFromTile
-        |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ categoryToString (categoryFromTile head))
+        |> List.Extra.gatherEqualsBy toCategory
+        |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ Category.toString (toCategory head))
         |> String.concat
 
 
@@ -966,12 +944,12 @@ handSuit =
 tilesFromSuitString : String -> List Tile
 tilesFromSuitString parsedSuit =
     let
-        category =
+        categoryString =
             String.right 1 parsedSuit
     in
     String.dropRight 1 parsedSuit
         |> String.toList
-        |> List.filterMap (\v -> fromString (String.fromChar v ++ category))
+        |> List.filterMap (\v -> fromString (String.fromChar v ++ categoryString))
 
 
 type alias TilesPerCategory =
@@ -986,7 +964,7 @@ partitionByCategory : List Tile -> TilesPerCategory
 partitionByCategory tiles =
     List.foldr
         (\t acc ->
-            case categoryFromTile t of
+            case toCategory t of
                 Man ->
                     { acc | man = t :: acc.man }
 

@@ -1,8 +1,9 @@
 module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, findGroups)
 
 import Array
+import Data.Category exposing (Category(..))
 import Data.Counter as Counter
-import Data.Tile as Tile exposing (Category(..), Tile)
+import Data.Tile as Tile exposing (Tile)
 import List.Extra
 
 

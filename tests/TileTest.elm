@@ -1,6 +1,6 @@
 module TileTest exposing (suite)
 
-import Data.Tile as Tile exposing (Category(..), Value(..))
+import Data.Tile as Tile
 import Expect
 import Fuzz exposing (Fuzzer)
 import Test exposing (Test, describe, fuzz)

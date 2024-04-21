@@ -1,15 +1,15 @@
 module Data.Tile exposing
-    ( Tile(..), Category(..), Value(..), Honor(..)
+    ( Tile(..), Category(..)
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort, countTiles
     , toString, fromString, tilesToString, tilesFromString
-    , compose, partitionByCategory, tileToInt, valueFromInt
+    , compose, man, partitionByCategory, pin, sou, tileToInt
     )
 
 {-|
 
-@docs Tile, Category, Value, Honor
+@docs Tile, Category
 @docs isMan, isPin, isSou, isHonor
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
@@ -23,26 +23,34 @@ import Parser exposing ((|.), (|=), Parser, Step(..))
 
 
 type Tile
-    = Man Value Bool
-    | Pin Value Bool
-    | Sou Value Bool
-    | Honor Honor
-
-
-type Value
-    = One
-    | Two
-    | Three
-    | Four
-    | Five
-    | Six
-    | Seven
-    | Eight
-    | Nine
-
-
-type Honor
-    = East
+    = M1
+    | M2
+    | M3
+    | M4
+    | M5 Bool
+    | M6
+    | M7
+    | M8
+    | M9
+    | P1
+    | P2
+    | P3
+    | P4
+    | P5 Bool
+    | P6
+    | P7
+    | P8
+    | P9
+    | S1
+    | S2
+    | S3
+    | S4
+    | S5 Bool
+    | S6
+    | S7
+    | S8
+    | S9
+    | East
     | South
     | West
     | North
@@ -51,163 +59,276 @@ type Honor
     | Red
 
 
-compose : { category : Category, value : Maybe Value, honor : Maybe Honor } -> Tile
-compose tile =
-    case ( tile.category, tile.value, tile.honor ) of
-        ( Man_, Just v, _ ) ->
-            Man v False
+compose : ( Category, Int ) -> Maybe Tile
+compose ( category, value ) =
+    case category of
+        Man ->
+            man value
 
-        ( Pin_, Just v, _ ) ->
-            Pin v False
+        Pin ->
+            pin value
 
-        ( Sou_, Just v, _ ) ->
-            Sou v False
+        Sou ->
+            sou value
 
-        ( Honor_, _, Just h ) ->
-            Honor h
-
-        _ ->
-            -- Must never happen
-            Man One False
+        Honor ->
+            honor value
 
 
-tileToInt : Tile -> Int
-tileToInt tile =
-    case tile of
-        Man value _ ->
-            valueToInt value
-
-        Pin value _ ->
-            valueToInt value
-
-        Sou value _ ->
-            valueToInt value
-
-        Honor East ->
-            1
-
-        Honor South ->
-            2
-
-        Honor West ->
-            3
-
-        Honor North ->
-            4
-
-        Honor White ->
-            5
-
-        Honor Green ->
-            6
-
-        Honor Red ->
-            7
-
-
-valueToInt : Value -> Int
-valueToInt v =
-    case v of
-        One ->
-            1
-
-        Two ->
-            2
-
-        Three ->
-            3
-
-        Four ->
-            4
-
-        Five ->
-            5
-
-        Six ->
-            6
-
-        Seven ->
-            7
-
-        Eight ->
-            8
-
-        Nine ->
-            9
-
-
-valueFromInt : Int -> Maybe Value
-valueFromInt value =
-    case value of
+man : Int -> Maybe Tile
+man int =
+    case int of
         1 ->
-            Just One
+            Just M1
 
         2 ->
-            Just Two
+            Just M2
 
         3 ->
-            Just Three
+            Just M3
 
         4 ->
-            Just Four
+            Just M4
 
         5 ->
-            Just Five
+            Just (M5 False)
 
         6 ->
-            Just Six
+            Just M6
 
         7 ->
-            Just Seven
+            Just M7
 
         8 ->
-            Just Eight
+            Just M8
 
         9 ->
-            Just Nine
+            Just M9
 
         _ ->
             Nothing
 
 
-isMan : Tile -> Bool
-isMan t =
-    case t of
-        Man _ _ ->
-            True
+pin : Int -> Maybe Tile
+pin int =
+    case int of
+        1 ->
+            Just P1
+
+        2 ->
+            Just P2
+
+        3 ->
+            Just P3
+
+        4 ->
+            Just P4
+
+        5 ->
+            Just (P5 False)
+
+        6 ->
+            Just P6
+
+        7 ->
+            Just P7
+
+        8 ->
+            Just P8
+
+        9 ->
+            Just P9
 
         _ ->
-            False
+            Nothing
+
+
+sou : Int -> Maybe Tile
+sou int =
+    case int of
+        1 ->
+            Just S1
+
+        2 ->
+            Just S2
+
+        3 ->
+            Just S3
+
+        4 ->
+            Just S4
+
+        5 ->
+            Just (S5 False)
+
+        6 ->
+            Just S6
+
+        7 ->
+            Just S7
+
+        8 ->
+            Just S8
+
+        9 ->
+            Just S9
+
+        _ ->
+            Nothing
+
+
+honor : Int -> Maybe Tile
+honor int =
+    case int of
+        1 ->
+            Just East
+
+        2 ->
+            Just South
+
+        3 ->
+            Just West
+
+        4 ->
+            Just North
+
+        5 ->
+            Just White
+
+        6 ->
+            Just Green
+
+        7 ->
+            Just Red
+
+        _ ->
+            Nothing
+
+
+tileToInt : Tile -> Int
+tileToInt tile =
+    case tile of
+        M1 ->
+            1
+
+        M2 ->
+            2
+
+        M3 ->
+            3
+
+        M4 ->
+            4
+
+        M5 _ ->
+            5
+
+        M6 ->
+            6
+
+        M7 ->
+            7
+
+        M8 ->
+            8
+
+        M9 ->
+            9
+
+        P1 ->
+            1
+
+        P2 ->
+            2
+
+        P3 ->
+            3
+
+        P4 ->
+            4
+
+        P5 _ ->
+            5
+
+        P6 ->
+            6
+
+        P7 ->
+            7
+
+        P8 ->
+            8
+
+        P9 ->
+            9
+
+        S1 ->
+            1
+
+        S2 ->
+            2
+
+        S3 ->
+            3
+
+        S4 ->
+            4
+
+        S5 _ ->
+            5
+
+        S6 ->
+            6
+
+        S7 ->
+            7
+
+        S8 ->
+            8
+
+        S9 ->
+            9
+
+        East ->
+            1
+
+        South ->
+            2
+
+        West ->
+            3
+
+        North ->
+            4
+
+        White ->
+            5
+
+        Green ->
+            6
+
+        Red ->
+            7
+
+
+isMan : Tile -> Bool
+isMan t =
+    List.member t [ M1, M2, M3, M4, M5 True, M5 False, M6, M7, M8, M9 ]
 
 
 isPin : Tile -> Bool
 isPin t =
-    case t of
-        Pin _ _ ->
-            True
-
-        _ ->
-            False
+    List.member t [ P1, P2, P3, P4, P5 True, P5 False, P6, P7, P8, P9 ]
 
 
 isSou : Tile -> Bool
 isSou t =
-    case t of
-        Sou _ _ ->
-            True
-
-        _ ->
-            False
+    List.member t [ S1, S2, S3, S4, S5 True, S5 False, S6, S7, S8, S9 ]
 
 
 isHonor : Tile -> Bool
 isHonor t =
-    case t of
-        Honor _ ->
-            True
-
-        _ ->
-            False
+    List.member t [ East, South, West, North, White, Green, Red ]
 
 
 isSuit : Tile -> Bool
@@ -217,7 +338,7 @@ isSuit t =
 
 isTerminal : Tile -> Bool
 isTerminal t =
-    isSuit t && (tileToInt t == 1 || tileToInt t == 9)
+    List.member t [ M1, M9, P1, P9, S1, S9 ]
 
 
 isYaojiu : Tile -> Bool
@@ -227,81 +348,28 @@ isYaojiu t =
 
 isRedFive : Tile -> Bool
 isRedFive t =
-    case t of
-        Man value red ->
-            red && value == Five
-
-        Pin value red ->
-            red && value == Five
-
-        Sou value red ->
-            red && value == Five
-
-        _ ->
-            False
+    List.member t [ M5 True, P5 True, S5 True ]
 
 
 isSameCategory2 : Tile -> Tile -> Bool
 isSameCategory2 a b =
-    case ( a, b ) of
-        ( Man _ _, Man _ _ ) ->
-            True
-
-        ( Pin _ _, Pin _ _ ) ->
-            True
-
-        ( Sou _ _, Sou _ _ ) ->
-            True
-
-        ( Honor _, Honor _ ) ->
-            True
-
-        _ ->
-            False
+    categoryFromTile a == categoryFromTile b
 
 
 isSameCategory3 : Tile -> Tile -> Tile -> Bool
 isSameCategory3 a b c =
-    case ( a, b, c ) of
-        ( Man _ _, Man _ _, Man _ _ ) ->
-            True
-
-        ( Pin _ _, Pin _ _, Pin _ _ ) ->
-            True
-
-        ( Sou _ _, Sou _ _, Sou _ _ ) ->
-            True
-
-        ( Honor _, Honor _, Honor _ ) ->
-            True
-
-        _ ->
-            False
+    categoryFromTile a == categoryFromTile b && categoryFromTile b == categoryFromTile c
 
 
 isSameCategory4 : Tile -> Tile -> Tile -> Tile -> Bool
 isSameCategory4 a b c d =
-    case [ a, b, c, d ] of
-        [ Man _ _, Man _ _, Man _ _, Man _ _ ] ->
-            True
-
-        [ Pin _ _, Pin _ _, Pin _ _, Pin _ _ ] ->
-            True
-
-        [ Sou _ _, Sou _ _, Sou _ _, Sou _ _ ] ->
-            True
-
-        [ Honor _, Honor _, Honor _, Honor _ ] ->
-            True
-
-        _ ->
-            False
+    (categoryFromTile a == categoryFromTile b) && (categoryFromTile b == categoryFromTile c) && (categoryFromTile c == categoryFromTile d)
 
 
 isTriplet : ( Tile, Tile, Tile ) -> Bool
 isTriplet ( a, b, c ) =
     isSameCategory3 a b c
-        && (tileToInt a == tileToInt b && tileToInt b == tileToInt c)
+        && (a == b && b == c)
 
 
 isRun : ( Tile, Tile, Tile ) -> Bool
@@ -313,12 +381,12 @@ isRun ( a, b, c ) =
 isGang : Tile -> Tile -> Tile -> Tile -> Bool
 isGang a b c d =
     isSameCategory4 a b c d
-        && (tileToInt a == tileToInt b && tileToInt b == tileToInt c && tileToInt c == tileToInt d)
+        && (a == b && b == c && c == d)
 
 
 isPair : ( Tile, Tile ) -> Bool
 isPair ( a, b ) =
-    isSameCategory2 a b && (tileToInt a == tileToInt b)
+    isSameCategory2 a b && (a == b)
 
 
 isPenchan : ( Tile, Tile ) -> Bool
@@ -335,56 +403,129 @@ isKanchan ( a, b ) =
 
 {-|
 
-    sort [ Man Three False, Man Two False, Man One False ]
-    --> [ Man One False, Man Two False, Man Three False ]
+    sort [ M3, M2, M1 ]
+    --> [ M1, M2, M3 ]
 
-    sort [ Sou One False, Honor East, Pin Two False, Man Three False, Man One False ]
-    --> [ Man One False, Man Three False, Pin Two False, Sou One False, Honor East ]
+    sort [ S1, East, P2, M3, M1 ]
+    --> [ M1, M3, P2, S1, East ]
 
 -}
 sort : List Tile -> List Tile
 sort tiles =
     tiles
         |> partitionByCategory
-        |> (\{ man, pin, sou, honor } -> List.concatMap sortByValue [ man, pin, sou, honor ])
+        |> (\ts -> List.concatMap sortByValue [ ts.man, ts.pin, ts.sou, ts.honor ])
 
 
 sortByValue : List Tile -> List Tile
 sortByValue tiles =
-    let
-        toComparable t =
-            case t of
-                Man value _ ->
-                    valueToInt value
-
-                Pin value _ ->
-                    valueToInt value
-
-                Sou value _ ->
-                    valueToInt value
-
-                Honor East ->
-                    10
-
-                Honor South ->
-                    11
-
-                Honor West ->
-                    12
-
-                Honor North ->
-                    13
-
-                Honor White ->
-                    14
-
-                Honor Green ->
-                    15
-
-                Honor Red ->
-                    16
-    in
     List.sortBy toComparable tiles
+
+
+toComparable : Tile -> Int
+toComparable t =
+    case t of
+        M1 ->
+            1
+
+        M2 ->
+            2
+
+        M3 ->
+            3
+
+        M4 ->
+            4
+
+        M5 _ ->
+            5
+
+        M6 ->
+            6
+
+        M7 ->
+            7
+
+        M8 ->
+            8
+
+        M9 ->
+            9
+
+        P1 ->
+            1
+
+        P2 ->
+            2
+
+        P3 ->
+            3
+
+        P4 ->
+            4
+
+        P5 _ ->
+            5
+
+        P6 ->
+            6
+
+        P7 ->
+            7
+
+        P8 ->
+            8
+
+        P9 ->
+            9
+
+        S1 ->
+            1
+
+        S2 ->
+            2
+
+        S3 ->
+            3
+
+        S4 ->
+            4
+
+        S5 _ ->
+            5
+
+        S6 ->
+            6
+
+        S7 ->
+            7
+
+        S8 ->
+            8
+
+        S9 ->
+            9
+
+        East ->
+            10
+
+        South ->
+            11
+
+        West ->
+            12
+
+        North ->
+            13
+
+        White ->
+            14
+
+        Green ->
+            15
+
+        Red ->
+            16
 
 
 countTiles : List Tile -> List ( Tile, Int )
@@ -395,77 +536,177 @@ countTiles tiles =
 
 {-| 萬子(Manzu):
 
-    Man One False |> toString --> "1m"
-    Man Two False |> toString --> "2m"
-    Man Three False |> toString --> "3m"
-    Man Four False |> toString --> "4m"
-    Man Five False |> toString --> "5m"
-    Man Six False |> toString --> "6m"
-    Man Seven False |> toString --> "7m"
-    Man Eight False |> toString --> "8m"
-    Man Nine False |> toString --> "9m"
+    toString M1 --> "1m"
+    toString M2 --> "2m"
+    toString M3 --> "3m"
+    toString M4 --> "4m"
+    toString (M5 False) --> "5m"
+    toString M6 --> "6m"
+    toString M7 --> "7m"
+    toString M8 --> "8m"
+    toString M9 --> "9m"
 
     筒子(Pinzu):
 
-    Pin One False |> toString --> "1p"
+    toString P1 --> "1p"
 
     索子(Souzu):
 
-    Sou One False |> toString --> "1s"
+    toString S1 --> "1s"
 
     字牌(Honor):
 
-    Honor East |> toString --> "1z"
-    Honor South |> toString --> "2z"
-    Honor West |> toString --> "3z"
-    Honor North |> toString --> "4z"
-    Honor White |> toString --> "5z"
-    Honor Green |> toString --> "6z"
-    Honor Red |> toString --> "7z"
+    toString East --> "1z"
+    toString South --> "2z"
+    toString West --> "3z"
+    toString North --> "4z"
+    toString White --> "5z"
+    toString Green --> "6z"
+    toString Red --> "7z"
 
 -}
 toString : Tile -> String
 toString tile =
-    valueToString tile ++ categoryToString (categoryFromTile tile)
+    case tile of
+        M1 ->
+            "1m"
+
+        M2 ->
+            "2m"
+
+        M3 ->
+            "3m"
+
+        M4 ->
+            "4m"
+
+        M5 _ ->
+            "5m"
+
+        M6 ->
+            "6m"
+
+        M7 ->
+            "7m"
+
+        M8 ->
+            "8m"
+
+        M9 ->
+            "9m"
+
+        P1 ->
+            "1p"
+
+        P2 ->
+            "2p"
+
+        P3 ->
+            "3p"
+
+        P4 ->
+            "4p"
+
+        P5 _ ->
+            "5p"
+
+        P6 ->
+            "6p"
+
+        P7 ->
+            "7p"
+
+        P8 ->
+            "8p"
+
+        P9 ->
+            "9p"
+
+        S1 ->
+            "1s"
+
+        S2 ->
+            "2s"
+
+        S3 ->
+            "3s"
+
+        S4 ->
+            "4s"
+
+        S5 _ ->
+            "5s"
+
+        S6 ->
+            "6s"
+
+        S7 ->
+            "7s"
+
+        S8 ->
+            "8s"
+
+        S9 ->
+            "9s"
+
+        East ->
+            "1z"
+
+        South ->
+            "2z"
+
+        West ->
+            "3z"
+
+        North ->
+            "4z"
+
+        White ->
+            "5z"
+
+        Green ->
+            "6z"
+
+        Red ->
+            "7z"
 
 
 type Category
-    = Man_
-    | Pin_
-    | Sou_
-    | Honor_
+    = Man
+    | Pin
+    | Sou
+    | Honor
 
 
 categoryToString : Category -> String
 categoryToString category =
     case category of
-        Man_ ->
+        Man ->
             "m"
 
-        Pin_ ->
+        Pin ->
             "p"
 
-        Sou_ ->
+        Sou ->
             "s"
 
-        Honor_ ->
+        Honor ->
             "z"
 
 
 categoryFromTile : Tile -> Category
 categoryFromTile tile =
-    case tile of
-        Man _ _ ->
-            Man_
+    if isMan tile then
+        Man
 
-        Pin _ _ ->
-            Pin_
+    else if isPin tile then
+        Pin
 
-        Sou _ _ ->
-            Sou_
+    else if isSou tile then
+        Sou
 
-        Honor _ ->
-            Honor_
+    else
+        Honor
 
 
 valueToString : Tile -> String
@@ -475,57 +716,161 @@ valueToString tile =
 
 {-| 萬子(Manzu):
 
-    fromString "1m" --> Just (Man One False)
-    fromString "2m" --> Just (Man Two False)
-    fromString "3m" --> Just (Man Three False)
-    fromString "4m" --> Just (Man Four False)
-    fromString "5m" --> Just (Man Five False)
-    fromString "6m" --> Just (Man Six False)
-    fromString "7m" --> Just (Man Seven False)
-    fromString "8m" --> Just (Man Eight False)
-    fromString "9m" --> Just (Man Nine False)
+    fromString "1m" --> Just M1
+    fromString "2m" --> Just M2
+    fromString "3m" --> Just M3
+    fromString "4m" --> Just M4
+    fromString "5m" --> Just (M5 False)
+    fromString "6m" --> Just M6
+    fromString "7m" --> Just M7
+    fromString "8m" --> Just M8
+    fromString "9m" --> Just M9
 
     筒子(Pinzu):
 
-    fromString "1p" --> Just (Pin One False)
+    fromString "1p" --> Just P1
 
     索子(Souzu):
 
-    fromString "1s" --> Just (Sou One False)
+    fromString "1s" --> Just S1
 
     字牌(Honor):
 
-    fromString "1z" --> Just (Honor East)
-    fromString "2z" --> Just (Honor South)
-    fromString "3z" --> Just (Honor West)
-    fromString "4z" --> Just (Honor North)
-    fromString "5z" --> Just (Honor White)
-    fromString "6z" --> Just (Honor Green)
-    fromString "7z" --> Just (Honor Red)
+    fromString "1z" --> Just East
+    fromString "2z" --> Just South
+    fromString "3z" --> Just West
+    fromString "4z" --> Just North
+    fromString "5z" --> Just White
+    fromString "6z" --> Just Green
+    fromString "7z" --> Just Red
 
 -}
 fromString : String -> Maybe Tile
 fromString string =
-    List.head (tilesFromString string)
+    case string of
+        "1m" ->
+            Just M1
+
+        "2m" ->
+            Just M2
+
+        "3m" ->
+            Just M3
+
+        "4m" ->
+            Just M4
+
+        "5m" ->
+            Just (M5 False)
+
+        "6m" ->
+            Just M6
+
+        "7m" ->
+            Just M7
+
+        "8m" ->
+            Just M8
+
+        "9m" ->
+            Just M9
+
+        "1p" ->
+            Just P1
+
+        "2p" ->
+            Just P2
+
+        "3p" ->
+            Just P3
+
+        "4p" ->
+            Just P4
+
+        "5p" ->
+            Just (P5 False)
+
+        "6p" ->
+            Just P6
+
+        "7p" ->
+            Just P7
+
+        "8p" ->
+            Just P8
+
+        "9p" ->
+            Just P9
+
+        "1s" ->
+            Just S1
+
+        "2s" ->
+            Just S2
+
+        "3s" ->
+            Just S3
+
+        "4s" ->
+            Just S4
+
+        "5s" ->
+            Just (S5 False)
+
+        "6s" ->
+            Just S6
+
+        "7s" ->
+            Just S7
+
+        "8s" ->
+            Just S8
+
+        "9s" ->
+            Just S9
+
+        "1z" ->
+            Just East
+
+        "2z" ->
+            Just South
+
+        "3z" ->
+            Just West
+
+        "4z" ->
+            Just North
+
+        "5z" ->
+            Just White
+
+        "6z" ->
+            Just Green
+
+        "7z" ->
+            Just Red
+
+        _ ->
+            Nothing
 
 
 {-|
 
-    tilesToString [ Man One False, Man One False, Man One False ]
+    tilesToString [ M1, M1, M1 ]
     --> "111m"
 
-    tilesToString [ Man One False, Man Two False, Man Three False ]
+    tilesToString [ M1, M2, M3 ]
     --> "123m"
 
-    tilesToString [ Sou One False, Honor East, Pin Two False, Man Three False, Man One False ]
+    tilesToString [ S1, East, P2, M3, M1 ]
     --> "13m2p1s1z"
 
     tilesToString
-        [ Man One False, Man Nine False
-        , Pin One False, Pin Nine False
-        , Sou One False, Sou Nine False
-        , Honor East, Honor South, Honor West, Honor West, Honor North
-        , Honor White, Honor Green, Honor Red
+        [ M1, M9
+        , P1, P9
+        , S1, S9
+        , East, South, West, West, North
+        , White, Green, Red
         ]
     --> "19m19p19s12334567z"
 
@@ -542,16 +887,16 @@ tilesToString tiles =
 {-|
 
     tilesFromString "111m"
-    --> [ Man One False, Man One False, Man One False ]
+    --> [ M1, M1, M1 ]
 
     tilesFromString "123m"
-    --> [ Man One False, Man Two False, Man Three False ]
+    --> [ M1, M2, M3 ]
 
     tilesFromString "13m2p1s1z"
-    --> [ Man One False, Man Three False, Pin Two False, Sou One False, Honor East ]
+    --> [ M1, M3, P2, S1, East ]
 
     tilesFromString "19m19p19s12334567z"
-    --> [ Man One False, Man Nine False, Pin One False, Pin Nine False, Sou One False, Sou Nine False, Honor East, Honor South, Honor West, Honor West, Honor North, Honor White, Honor Green, Honor Red ]
+    --> [ M1, M9, P1, P9, S1, S9, East, South, West, West, North, White, Green, Red ]
 
 -}
 tilesFromString : String -> List Tile
@@ -591,105 +936,12 @@ handSuit =
 tilesFromSuitString : String -> List Tile
 tilesFromSuitString parsedSuit =
     let
-        maybeCategory =
-            case String.right 1 parsedSuit of
-                "m" ->
-                    Just Man_
-
-                "p" ->
-                    Just Pin_
-
-                "s" ->
-                    Just Sou_
-
-                "z" ->
-                    Just Honor_
-
-                _ ->
-                    Nothing
-
-        maybeHonorTile str =
-            case str of
-                "1" ->
-                    Just (Honor East)
-
-                "2" ->
-                    Just (Honor South)
-
-                "3" ->
-                    Just (Honor West)
-
-                "4" ->
-                    Just (Honor North)
-
-                "5" ->
-                    Just (Honor White)
-
-                "6" ->
-                    Just (Honor Green)
-
-                "7" ->
-                    Just (Honor Red)
-
-                _ ->
-                    Nothing
-
-        maybeSuitTile str =
-            case str of
-                "1" ->
-                    Just One
-
-                "2" ->
-                    Just Two
-
-                "3" ->
-                    Just Three
-
-                "4" ->
-                    Just Four
-
-                "5" ->
-                    Just Five
-
-                "6" ->
-                    Just Six
-
-                "7" ->
-                    Just Seven
-
-                "8" ->
-                    Just Eight
-
-                "9" ->
-                    Just Nine
-
-                _ ->
-                    Nothing
-
-        values =
-            String.dropRight 1 parsedSuit
-                |> String.toList
-                |> List.map String.fromChar
-                |> List.filterMap maybeSuitTile
+        category =
+            String.right 1 parsedSuit
     in
-    case maybeCategory of
-        Just Man_ ->
-            List.map (\v -> Man v False) values
-
-        Just Pin_ ->
-            List.map (\v -> Pin v False) values
-
-        Just Sou_ ->
-            List.map (\v -> Sou v False) values
-
-        Just Honor_ ->
-            String.dropRight 1 parsedSuit
-                |> String.toList
-                |> List.map String.fromChar
-                |> List.filterMap maybeHonorTile
-
-        Nothing ->
-            []
+    String.dropRight 1 parsedSuit
+        |> String.toList
+        |> List.filterMap (\v -> fromString (String.fromChar v ++ category))
 
 
 type alias TilesPerCategory =
@@ -704,17 +956,17 @@ partitionByCategory : List Tile -> TilesPerCategory
 partitionByCategory tiles =
     List.foldr
         (\t acc ->
-            case t of
-                Man _ _ ->
+            case categoryFromTile t of
+                Man ->
                     { acc | man = t :: acc.man }
 
-                Pin _ _ ->
+                Pin ->
                     { acc | pin = t :: acc.pin }
 
-                Sou _ _ ->
+                Sou ->
                     { acc | sou = t :: acc.sou }
 
-                Honor _ ->
+                Honor ->
                     { acc | honor = t :: acc.honor }
         )
         { sou = [], man = [], pin = [], honor = [] }

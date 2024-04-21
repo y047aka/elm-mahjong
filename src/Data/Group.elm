@@ -2,7 +2,7 @@ module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesia
 
 import Array
 import Data.Counter as Counter
-import Data.Tile as Tile exposing (Category(..), Tile, Value(..))
+import Data.Tile as Tile exposing (Category(..), Honor(..), Tile(..), Value(..))
 import List.Extra
 
 
@@ -46,17 +46,17 @@ findGroups findPartialGroups tiles =
             Tile.partitionByCategory tiles
     in
     { perSuit =
-        { sou = findGroupsInSuit findPartialGroups Sou part.sou
-        , man = findGroupsInSuit findPartialGroups Man part.man
-        , pin = findGroupsInSuit findPartialGroups Pin part.pin
-        , honor = findGroupsInSuit findPartialGroups Honor part.honor
+        { sou = findGroupsInSuit findPartialGroups Sou_ part.sou
+        , man = findGroupsInSuit findPartialGroups Man_ part.man
+        , pin = findGroupsInSuit findPartialGroups Pin_ part.pin
+        , honor = findGroupsInSuit findPartialGroups Honor_ part.honor
         }
     }
 
 
 findGroupsInSuit : FindPartialsOption -> Category -> List Tile -> List (List Group)
 findGroupsInSuit findPartialsOption suit tiles =
-    List.map Tile.valueToInt tiles
+    List.map Tile.tileToInt tiles
         |> List.sort
         |> Counter.fromIntList
         |> findGroupsInSuitHelper findPartialsOption suit 0 True
@@ -109,11 +109,39 @@ findGroupsInSuitHelper findPartialsOption suit n shouldFindPair counter =
             |> map2RetainJust List.append skipTile
 
 
+honorFromInt : Int -> Maybe Honor
+honorFromInt int =
+    case int of
+        1 ->
+            Just East
+
+        2 ->
+            Just South
+
+        3 ->
+            Just West
+
+        4 ->
+            Just North
+
+        5 ->
+            Just White
+
+        6 ->
+            Just Green
+
+        7 ->
+            Just Red
+
+        _ ->
+            Nothing
+
+
 consumeRun : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumeRun findPartialsOption suit n shouldFindPair counter count =
     let
         foundRun =
-            suit /= Honor && n < 7 && count >= 1 && Counter.getCount (n + 1) counter > 0 && Counter.getCount (n + 2) counter > 0
+            suit /= Honor_ && n < 7 && count >= 1 && Counter.getCount (n + 1) counter > 0 && Counter.getCount (n + 2) counter > 0
     in
     if foundRun then
         let
@@ -132,9 +160,9 @@ consumeRun findPartialsOption suit n shouldFindPair counter count =
         findGroupsInSuitHelper findPartialsOption suit n shouldFindPair updatedCounter
             |> addGroupToHead
                 (Run
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 2) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 3) False)
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = Nothing })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 2, honor = Nothing })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 3, honor = Nothing })
                 )
 
     else
@@ -147,8 +175,8 @@ consumePair findPartialsOption suit n shouldFindPair counter count =
         findGroupsInSuitHelper findPartialsOption suit n False (Array.set n (count - 2) counter)
             |> addGroupToHead
                 (Pair
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = honorFromInt <| n + 1 })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = honorFromInt <| n + 1 })
                 )
 
     else
@@ -161,9 +189,9 @@ consumeTriplet findPartialsOption suit n shouldFindPair counter count =
         findGroupsInSuitHelper findPartialsOption suit n shouldFindPair (Array.set n (count - 3) counter)
             |> addGroupToHead
                 (Triplet
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = honorFromInt <| n + 1 })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = honorFromInt <| n + 1 })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = honorFromInt <| n + 1 })
                 )
 
     else
@@ -176,7 +204,7 @@ consumePartialRyanmenPenchan findPartialsOption suit n shouldFindPair counter co
         count2 =
             Counter.getCount (n + 1) counter
     in
-    if findPartialsOption == FindPartials && suit /= Honor && count >= 1 && count2 >= 1 then
+    if findPartialsOption == FindPartials && suit /= Honor_ && count >= 1 && count2 >= 1 then
         let
             updatedCounter =
                 counter
@@ -186,8 +214,8 @@ consumePartialRyanmenPenchan findPartialsOption suit n shouldFindPair counter co
         findGroupsInSuitHelper findPartialsOption suit n shouldFindPair updatedCounter
             |> addGroupToHead
                 (PartialPenchan
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 2) False)
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = Nothing })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 2, honor = Nothing })
                 )
 
     else
@@ -200,7 +228,7 @@ consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
         count2 =
             Counter.getCount (n + 2) counter
     in
-    if findPartialsOption == FindPartials && suit /= Honor && count >= 1 && count2 >= 1 then
+    if findPartialsOption == FindPartials && suit /= Honor_ && count >= 1 && count2 >= 1 then
         let
             updatedCounter =
                 counter
@@ -210,8 +238,8 @@ consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
         findGroupsInSuitHelper findPartialsOption suit n shouldFindPair updatedCounter
             |> addGroupToHead
                 (PartialKanchan
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 1) False)
-                    (Tile suit (Maybe.withDefault One <| Tile.valueFromInt <| n + 3) False)
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 1, honor = Nothing })
+                    (Tile.compose { category = suit, value = Tile.valueFromInt <| n + 3, honor = Nothing })
                 )
 
     else

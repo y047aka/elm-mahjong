@@ -1,7 +1,7 @@
 module ShantenTest exposing (suite)
 
 import Data.Shanten as Shanten
-import Data.Tile as Tile exposing (Category(..), Tile, Value(..))
+import Data.Tile as Tile exposing (Category(..), Honor(..), Tile(..), Value(..))
 import Expect
 import Fuzz exposing (Fuzzer)
 import List.Extra
@@ -157,34 +157,34 @@ tilefromInt : Int -> Maybe Tile
 tilefromInt n =
     case ( n // 9, remainderBy 9 n ) of
         ( 0, i ) ->
-            Maybe.map (\v -> Tile Man v False) (Tile.valueFromInt (i + 1))
+            Maybe.map (\v -> Man v False) (Tile.valueFromInt (i + 1))
 
         ( 1, i ) ->
-            Maybe.map (\v -> Tile Pin v False) (Tile.valueFromInt (i + 1))
+            Maybe.map (\v -> Pin v False) (Tile.valueFromInt (i + 1))
 
         ( 2, i ) ->
-            Maybe.map (\v -> Tile Sou v False) (Tile.valueFromInt (i + 1))
+            Maybe.map (\v -> Sou v False) (Tile.valueFromInt (i + 1))
 
         ( 3, 0 ) ->
-            Just (Tile Honor East False)
+            Just (Honor East)
 
         ( 3, 1 ) ->
-            Just (Tile Honor South False)
+            Just (Honor South)
 
         ( 3, 2 ) ->
-            Just (Tile Honor West False)
+            Just (Honor West)
 
         ( 3, 3 ) ->
-            Just (Tile Honor North False)
+            Just (Honor North)
 
         ( 3, 4 ) ->
-            Just (Tile Honor White False)
+            Just (Honor White)
 
         ( 3, 5 ) ->
-            Just (Tile Honor Green False)
+            Just (Honor Green)
 
         ( 3, 6 ) ->
-            Just (Tile Honor Red False)
+            Just (Honor Red)
 
         _ ->
             Nothing

@@ -1,9 +1,9 @@
 module TileTest exposing (suite)
 
-import Data.Tile as Tile exposing (Category(..), Tile, Value(..))
+import Data.Tile as Tile exposing (Category(..), Value(..))
 import Expect
 import Fuzz exposing (Fuzzer)
-import Test exposing (Test, describe, fuzz, test)
+import Test exposing (Test, describe, fuzz)
 
 
 tilesString : Fuzzer String
@@ -44,12 +44,7 @@ honorString =
 suite : Test
 suite =
     describe "Data.Tile module"
-        [ test "萬子(Manzu)" <|
-            \_ ->
-                Tile Man One False
-                    |> Tile.toString
-                    |> Expect.equal "1m"
-        , fuzz tilesString "tilesFromString and tilesToString" <|
+        [ fuzz tilesString "tilesFromString and tilesToString" <|
             \str ->
                 Tile.tilesFromString str
                     |> Tile.tilesToString

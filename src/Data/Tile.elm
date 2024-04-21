@@ -362,15 +362,9 @@ isSameCategory3 a b c =
     Category.isSameCategory3 (toCategory a) (toCategory b) (toCategory c)
 
 
-isSameCategory4 : Tile -> Tile -> Tile -> Tile -> Bool
-isSameCategory4 a b c d =
-    Category.isSameCategory4 (toCategory a) (toCategory b) (toCategory c) (toCategory d)
-
-
 isTriplet : ( Tile, Tile, Tile ) -> Bool
 isTriplet ( a, b, c ) =
-    isSameCategory3 a b c
-        && (a == b && b == c)
+    a == b && b == c
 
 
 isRun : ( Tile, Tile, Tile ) -> Bool
@@ -381,13 +375,12 @@ isRun ( a, b, c ) =
 
 isGang : Tile -> Tile -> Tile -> Tile -> Bool
 isGang a b c d =
-    isSameCategory4 a b c d
-        && (a == b && b == c && c == d)
+    a == b && b == c && c == d
 
 
 isPair : ( Tile, Tile ) -> Bool
 isPair ( a, b ) =
-    isSameCategory2 a b && (a == b)
+    a == b
 
 
 isPenchan : ( Tile, Tile ) -> Bool

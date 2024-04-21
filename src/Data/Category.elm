@@ -1,13 +1,13 @@
 module Data.Category exposing
     ( Category(..)
-    , isSameCategory2, isSameCategory3, isSameCategory4
+    , isSameCategory2, isSameCategory3
     , toString
     )
 
 {-|
 
 @docs Category
-@docs isSameCategory2, isSameCategory3, isSameCategory4
+@docs isSameCategory2, isSameCategory3
 @docs toString
 
 -}
@@ -28,11 +28,6 @@ isSameCategory2 a b =
 isSameCategory3 : Category -> Category -> Category -> Bool
 isSameCategory3 a b c =
     a == b && b == c
-
-
-isSameCategory4 : Category -> Category -> Category -> Category -> Bool
-isSameCategory4 a b c d =
-    a == b && b == c && c == d
 
 
 toString : Category -> String

@@ -20,7 +20,7 @@ suite =
                 \_ ->
                     caseFromString "2 4 8 10 14 15 18 20 22 22 25 30 31 32 4 8 5"
                         |> Expect.equal
-                            { tiles = List.filterMap tilefromInt [ 2, 4, 8, 10, 14, 15, 18, 20, 22, 22, 25, 30, 31, 32 ]
+                            { tiles = List.filterMap Tile.fromComparable [ 2, 4, 8, 10, 14, 15, 18, 20, 22, 22, 25, 30, 31, 32 ]
                             , shantenStandard = 4
                             , shantenKokushi = 8
                             , shantenChiitoitsu = 5
@@ -135,7 +135,7 @@ caseFromString str =
             String.split " " str
                 |> List.Extra.splitAt 14
                 |> Tuple.mapBoth
-                    (List.filterMap (String.toInt >> Maybe.andThen tilefromInt))
+                    (List.filterMap (String.toInt >> Maybe.andThen Tile.fromComparable))
                     (List.filterMap String.toInt)
 
         ( shantenStandard_, shantenKokushi_, shantenChiitoitsu_ ) =
@@ -151,40 +151,3 @@ caseFromString str =
     , shantenKokushi = shantenKokushi_
     , shantenChiitoitsu = shantenChiitoitsu_
     }
-
-
-tilefromInt : Int -> Maybe Tile
-tilefromInt n =
-    case ( n, n // 9, remainderBy 9 n ) of
-        ( _, 0, i ) ->
-            Tile.man (i + 1)
-
-        ( _, 1, i ) ->
-            Tile.pin (i + 1)
-
-        ( _, 2, i ) ->
-            Tile.sou (i + 1)
-
-        ( 27, _, _ ) ->
-            Just East
-
-        ( 28, _, _ ) ->
-            Just South
-
-        ( 29, _, _ ) ->
-            Just West
-
-        ( 30, _, _ ) ->
-            Just North
-
-        ( 31, _, _ ) ->
-            Just White
-
-        ( 32, _, _ ) ->
-            Just Green
-
-        ( 33, _, _ ) ->
-            Just Red
-
-        _ ->
-            Nothing

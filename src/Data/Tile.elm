@@ -4,7 +4,7 @@ module Data.Tile exposing
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort, countTiles
     , toString, fromString, tilesToString, tilesFromString
-    , compose, man, partitionByCategory, pin, sou, tileToInt
+    , compose, fromComparable, man, partitionByCategory, pin, sou, tileToInt
     )
 
 {-|
@@ -412,13 +412,6 @@ isKanchan ( a, b ) =
 -}
 sort : List Tile -> List Tile
 sort tiles =
-    tiles
-        |> partitionByCategory
-        |> (\ts -> List.concatMap sortByValue [ ts.man, ts.pin, ts.sou, ts.honor ])
-
-
-sortByValue : List Tile -> List Tile
-sortByValue tiles =
     List.sortBy toComparable tiles
 
 
@@ -426,106 +419,143 @@ toComparable : Tile -> Int
 toComparable t =
     case t of
         M1 ->
-            1
+            0
 
         M2 ->
-            2
+            1
 
         M3 ->
-            3
+            2
 
         M4 ->
-            4
+            3
 
         M5 _ ->
-            5
+            4
 
         M6 ->
-            6
+            5
 
         M7 ->
-            7
+            6
 
         M8 ->
-            8
+            7
 
         M9 ->
-            9
+            8
 
         P1 ->
-            1
+            9
 
         P2 ->
-            2
-
-        P3 ->
-            3
-
-        P4 ->
-            4
-
-        P5 _ ->
-            5
-
-        P6 ->
-            6
-
-        P7 ->
-            7
-
-        P8 ->
-            8
-
-        P9 ->
-            9
-
-        S1 ->
-            1
-
-        S2 ->
-            2
-
-        S3 ->
-            3
-
-        S4 ->
-            4
-
-        S5 _ ->
-            5
-
-        S6 ->
-            6
-
-        S7 ->
-            7
-
-        S8 ->
-            8
-
-        S9 ->
-            9
-
-        East ->
             10
 
-        South ->
+        P3 ->
             11
 
-        West ->
+        P4 ->
             12
 
-        North ->
+        P5 _ ->
             13
 
-        White ->
+        P6 ->
             14
 
-        Green ->
+        P7 ->
             15
 
-        Red ->
+        P8 ->
             16
+
+        P9 ->
+            17
+
+        S1 ->
+            18
+
+        S2 ->
+            19
+
+        S3 ->
+            20
+
+        S4 ->
+            21
+
+        S5 _ ->
+            22
+
+        S6 ->
+            23
+
+        S7 ->
+            24
+
+        S8 ->
+            25
+
+        S9 ->
+            26
+
+        East ->
+            27
+
+        South ->
+            28
+
+        West ->
+            29
+
+        North ->
+            30
+
+        White ->
+            31
+
+        Green ->
+            32
+
+        Red ->
+            33
+
+
+fromComparable : Int -> Maybe Tile
+fromComparable comparable =
+    case ( comparable, comparable // 9, remainderBy 9 comparable ) of
+        ( _, 0, i ) ->
+            man (i + 1)
+
+        ( _, 1, i ) ->
+            pin (i + 1)
+
+        ( _, 2, i ) ->
+            sou (i + 1)
+
+        ( 27, _, _ ) ->
+            Just East
+
+        ( 28, _, _ ) ->
+            Just South
+
+        ( 29, _, _ ) ->
+            Just West
+
+        ( 30, _, _ ) ->
+            Just North
+
+        ( 31, _, _ ) ->
+            Just White
+
+        ( 32, _, _ ) ->
+            Just Green
+
+        ( 33, _, _ ) ->
+            Just Red
+
+        _ ->
+            Nothing
 
 
 countTiles : List Tile -> List ( Tile, Int )

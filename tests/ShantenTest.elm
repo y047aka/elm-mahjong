@@ -155,35 +155,35 @@ caseFromString str =
 
 tilefromInt : Int -> Maybe Tile
 tilefromInt n =
-    case ( n // 9, remainderBy 9 n ) of
-        ( 0, i ) ->
+    case ( n, n // 9, remainderBy 9 n ) of
+        ( _, 0, i ) ->
             Tile.man (i + 1)
 
-        ( 1, i ) ->
+        ( _, 1, i ) ->
             Tile.pin (i + 1)
 
-        ( 2, i ) ->
+        ( _, 2, i ) ->
             Tile.sou (i + 1)
 
-        ( 3, 0 ) ->
+        ( 27, _, _ ) ->
             Just East
 
-        ( 3, 1 ) ->
+        ( 28, _, _ ) ->
             Just South
 
-        ( 3, 2 ) ->
+        ( 29, _, _ ) ->
             Just West
 
-        ( 3, 3 ) ->
+        ( 30, _, _ ) ->
             Just North
 
-        ( 3, 4 ) ->
+        ( 31, _, _ ) ->
             Just White
 
-        ( 3, 5 ) ->
+        ( 32, _, _ ) ->
             Just Green
 
-        ( 3, 6 ) ->
+        ( 33, _, _ ) ->
             Just Red
 
         _ ->

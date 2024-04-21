@@ -6,6 +6,17 @@ import Fuzz exposing (Fuzzer)
 import Test exposing (Test, describe, fuzz)
 
 
+suite : Test
+suite =
+    describe "Data.Tile module"
+        [ fuzz tilesString "tilesFromString and tilesToString" <|
+            \str ->
+                Tile.tilesFromString str
+                    |> Tile.tilesToString
+                    |> Expect.equal str
+        ]
+
+
 tilesString : Fuzzer String
 tilesString =
     [ suitString "m", suitString "p", suitString "s", honorString ]
@@ -39,14 +50,3 @@ honorString =
                 else
                     (List.sort tiles |> String.concat) ++ "z"
             )
-
-
-suite : Test
-suite =
-    describe "Data.Tile module"
-        [ fuzz tilesString "tilesFromString and tilesToString" <|
-            \str ->
-                Tile.tilesFromString str
-                    |> Tile.tilesToString
-                    |> Expect.equal str
-        ]

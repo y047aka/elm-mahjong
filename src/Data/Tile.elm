@@ -4,7 +4,7 @@ module Data.Tile exposing
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort, countTiles
     , toString, fromString, tilesToString, tilesFromString
-    , compose, fromComparable, man, partitionByCategory, pin, sou, tileToInt
+    , compose, fromComparable, manFromInt, partitionByCategory, pinFromInt, souFromInt, tileToInt
     )
 
 {-|
@@ -64,20 +64,20 @@ compose : ( Category, Int ) -> Maybe Tile
 compose ( category, value ) =
     case category of
         Man ->
-            man value
+            manFromInt value
 
         Pin ->
-            pin value
+            pinFromInt value
 
         Sou ->
-            sou value
+            souFromInt value
 
         Honor ->
-            honor value
+            honorFromInt value
 
 
-man : Int -> Maybe Tile
-man int =
+manFromInt : Int -> Maybe Tile
+manFromInt int =
     case int of
         1 ->
             Just M1
@@ -110,8 +110,8 @@ man int =
             Nothing
 
 
-pin : Int -> Maybe Tile
-pin int =
+pinFromInt : Int -> Maybe Tile
+pinFromInt int =
     case int of
         1 ->
             Just P1
@@ -144,8 +144,8 @@ pin int =
             Nothing
 
 
-sou : Int -> Maybe Tile
-sou int =
+souFromInt : Int -> Maybe Tile
+souFromInt int =
     case int of
         1 ->
             Just S1
@@ -178,8 +178,8 @@ sou int =
             Nothing
 
 
-honor : Int -> Maybe Tile
-honor int =
+honorFromInt : Int -> Maybe Tile
+honorFromInt int =
     case int of
         1 ->
             Just East
@@ -519,13 +519,13 @@ fromComparable : Int -> Maybe Tile
 fromComparable comparable =
     case ( comparable, comparable // 9, remainderBy 9 comparable ) of
         ( _, 0, i ) ->
-            man (i + 1)
+            manFromInt (i + 1)
 
         ( _, 1, i ) ->
-            pin (i + 1)
+            pinFromInt (i + 1)
 
         ( _, 2, i ) ->
-            sou (i + 1)
+            souFromInt (i + 1)
 
         ( 27, _, _ ) ->
             Just East
@@ -710,11 +710,6 @@ toString tile =
             "7z"
 
 
-valueToString : Tile -> String
-valueToString tile =
-    tileToInt tile |> String.fromInt
-
-
 {-| 萬子(Manzu):
 
     fromString "1m" --> Just M1
@@ -878,11 +873,25 @@ fromString string =
 -}
 tilesToString : List Tile -> String
 tilesToString tiles =
+    let
+        toString_ category tiles_ =
+            case tiles_ of
+                [] ->
+                    ""
+
+                ts ->
+                    String.concat (List.map (tileToInt >> String.fromInt) (sort ts)) ++ category
+    in
     tiles
-        |> sort
-        |> List.Extra.gatherEqualsBy toCategory
-        |> List.map (\( head, tails ) -> String.concat (List.map valueToString (head :: tails)) ++ Category.toString (toCategory head))
-        |> String.concat
+        |> partitionByCategory
+        |> (\{ man, pin, sou, honor } ->
+                String.concat
+                    [ toString_ "m" man
+                    , toString_ "p" pin
+                    , toString_ "s" sou
+                    , toString_ "z" honor
+                    ]
+           )
 
 
 {-|

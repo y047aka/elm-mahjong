@@ -1,18 +1,23 @@
 module Data.Tile exposing
     ( Tile(..)
+    , compose, manFromInt, pinFromInt, souFromInt, honorFromInt
+    , isMan, isPin, isSou, isHonor, isSuit
     , isTerminal, isYaojiu
     , isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
     , sort, countTiles
     , toString, fromString, tilesToString, tilesFromString
-    , compose, fromComparable, manFromInt, partitionByCategory, pinFromInt, souFromInt, tileToInt
+    , fromComparable, partitionByCategory, tileToInt, toCategory
     )
 
 {-|
 
 @docs Tile
-@docs isMan, isPin, isSou, isHonor
+@docs compose, manFromInt, pinFromInt, souFromInt, honorFromInt
+
+@docs isMan, isPin, isSou, isHonor, isSuit
 @docs isTerminal, isYaojiu
 @docs isTriplet, isRun, isGang, isPair, isPenchan, isKanchan
+
 @docs sort, countTiles
 @docs toString, fromString, tilesToString, tilesFromString
 
@@ -76,6 +81,15 @@ compose ( category, value ) =
             honorFromInt value
 
 
+{-|
+
+    manFromInt 1 --> Just M1
+
+    manFromInt 5 --> Just (M5 False)
+
+    manFromInt 10 --> Nothing
+
+-}
 manFromInt : Int -> Maybe Tile
 manFromInt int =
     case int of
@@ -110,6 +124,15 @@ manFromInt int =
             Nothing
 
 
+{-|
+
+    pinFromInt 1 --> Just P1
+
+    pinFromInt 5 --> Just (P5 False)
+
+    pinFromInt 10 --> Nothing
+
+-}
 pinFromInt : Int -> Maybe Tile
 pinFromInt int =
     case int of
@@ -144,6 +167,15 @@ pinFromInt int =
             Nothing
 
 
+{-|
+
+    souFromInt 1 --> Just S1
+
+    souFromInt 5 --> Just (S5 False)
+
+    souFromInt 10 --> Nothing
+
+-}
 souFromInt : Int -> Maybe Tile
 souFromInt int =
     case int of
@@ -178,6 +210,15 @@ souFromInt int =
             Nothing
 
 
+{-|
+
+    honorFromInt 1 --> Just East
+
+    honorFromInt 5 --> Just White
+
+    honorFromInt 8 --> Nothing
+
+-}
 honorFromInt : Int -> Maybe Tile
 honorFromInt int =
     case int of
@@ -206,6 +247,15 @@ honorFromInt int =
             Nothing
 
 
+{-|
+
+    tileToInt M1 --> 1
+
+    tileToInt (P5 False) --> 5
+
+    tileToInt Red --> 7
+
+-}
 tileToInt : Tile -> Int
 tileToInt tile =
     case tile of
@@ -312,36 +362,99 @@ tileToInt tile =
             7
 
 
+{-|
+
+    isMan M1 --> True
+
+    isMan (M5 True) --> True
+
+    isMan P1 --> False
+
+-}
 isMan : Tile -> Bool
 isMan t =
     List.member t [ M1, M2, M3, M4, M5 True, M5 False, M6, M7, M8, M9 ]
 
 
+{-|
+
+    isPin P1 --> True
+
+    isPin (P5 True) --> True
+
+    isPin M1 --> False
+
+-}
 isPin : Tile -> Bool
 isPin t =
     List.member t [ P1, P2, P3, P4, P5 True, P5 False, P6, P7, P8, P9 ]
 
 
+{-|
+
+    isSou S1 --> True
+
+    isSou (S5 True) --> True
+
+    isSou M1 --> False
+
+-}
 isSou : Tile -> Bool
 isSou t =
     List.member t [ S1, S2, S3, S4, S5 True, S5 False, S6, S7, S8, S9 ]
 
 
+{-|
+
+    isHonor East --> True
+
+    isHonor M1 --> False
+
+-}
 isHonor : Tile -> Bool
 isHonor t =
     List.member t [ East, South, West, North, White, Green, Red ]
 
 
+{-|
+
+    isSuit M1 --> True
+
+    isSuit East --> False
+
+-}
 isSuit : Tile -> Bool
 isSuit t =
     not (isHonor t)
 
 
+{-|
+
+    isTerminal M1 --> True
+
+    isTerminal P9 --> True
+
+    isTerminal M2 --> False
+
+    isTerminal East --> False
+
+-}
 isTerminal : Tile -> Bool
 isTerminal t =
     List.member t [ M1, M9, P1, P9, S1, S9 ]
 
 
+{-|
+
+    isYaojiu M1 --> True
+
+    isYaojiu P9 --> True
+
+    isYaojiu M2 --> False
+
+    isYaojiu East --> True
+
+-}
 isYaojiu : Tile -> Bool
 isYaojiu t =
     isHonor t || isTerminal t
@@ -362,33 +475,89 @@ isSameCategory3 a b c =
     Category.isSameCategory3 (toCategory a) (toCategory b) (toCategory c)
 
 
+{-|
+
+    isTriplet ( M1, M1, M1 ) --> True
+
+    isTriplet ( M1, M2, M3 ) --> False
+
+    isTriplet ( East, East, East ) --> True
+
+-}
 isTriplet : ( Tile, Tile, Tile ) -> Bool
 isTriplet ( a, b, c ) =
     a == b && b == c
 
 
+{-|
+
+    isRun ( M1, M2, M3 ) --> True
+
+    isRun ( M1, M1, M1 ) --> False
+
+    isRun ( M3, M4, M5 False ) --> True
+
+    isRun ( East, East, East ) --> False
+
+-}
 isRun : ( Tile, Tile, Tile ) -> Bool
 isRun ( a, b, c ) =
     (isSuit a && isSameCategory3 a b c)
         && (tileToInt a + 1 == tileToInt b && tileToInt b + 1 == tileToInt c)
 
 
+{-|
+
+    isGang M1 M1 M1 M1 --> True
+
+    isGang M1 M1 M1 M2 --> False
+
+    isGang East East East East --> True
+
+-}
 isGang : Tile -> Tile -> Tile -> Tile -> Bool
 isGang a b c d =
     a == b && b == c && c == d
 
 
+{-|
+
+    isPair ( M1, M1 ) --> True
+
+    isPair ( M1, M2 ) --> False
+
+    isPair ( East, East ) --> True
+
+-}
 isPair : ( Tile, Tile ) -> Bool
 isPair ( a, b ) =
     a == b
 
 
+{-|
+
+    isPenchan ( M1, M2 ) --> True
+
+    isPenchan ( M1, M3 ) --> False
+
+    isPenchan ( M3, M4 ) --> True
+
+-}
 isPenchan : ( Tile, Tile ) -> Bool
 isPenchan ( a, b ) =
     (isSuit a && isSameCategory2 a b)
         && (tileToInt a + 1 == tileToInt b)
 
 
+{-|
+
+    isKanchan ( M1, M3 ) --> True
+
+    isKanchan ( M1, M4 ) --> False
+
+    isKanchan ( M3, M5 False ) --> True
+
+-}
 isKanchan : ( Tile, Tile ) -> Bool
 isKanchan ( a, b ) =
     (isSuit a && isSameCategory2 a b)
@@ -397,11 +566,9 @@ isKanchan ( a, b ) =
 
 {-|
 
-    sort [ M3, M2, M1 ]
-    --> [ M1, M2, M3 ]
+    sort [ M3, M2, M1 ] --> [ M1, M2, M3 ]
 
-    sort [ S1, East, P2, M3, M1 ]
-    --> [ M1, M3, P2, S1, East ]
+    sort [ S1, East, P2, M3, M1 ] --> [ M1, M3, P2, S1, East ]
 
 -}
 sort : List Tile -> List Tile
@@ -558,6 +725,15 @@ countTiles tiles =
         |> List.map (\( head, tails ) -> ( head, 1 + List.length tails ))
 
 
+{-|
+
+    import Data.Category exposing (Category(..))
+
+    toCategory M1 --> Man
+
+    toCategory East --> Honor
+
+-}
 toCategory : Tile -> Category
 toCategory tile =
     if isMan tile then
@@ -852,22 +1028,13 @@ fromString string =
 
 {-|
 
-    tilesToString [ M1, M1, M1 ]
-    --> "111m"
+    tilesToString [ M1, M1, M1 ] --> "111m"
 
-    tilesToString [ M1, M2, M3 ]
-    --> "123m"
+    tilesToString [ M1, M2, M3 ] --> "123m"
 
-    tilesToString [ S1, East, P2, M3, M1 ]
-    --> "13m2p1s1z"
+    tilesToString [ S1, East, P2, M3, M1 ] --> "13m2p1s1z"
 
-    tilesToString
-        [ M1, M9
-        , P1, P9
-        , S1, S9
-        , East, South, West, West, North
-        , White, Green, Red
-        ]
+    tilesToString [ M1, M9, P1, P9, S1, S9, East, South, West, West, North, White, Green, Red ]
     --> "19m19p19s12334567z"
 
 -}
@@ -896,14 +1063,11 @@ tilesToString tiles =
 
 {-|
 
-    tilesFromString "111m"
-    --> [ M1, M1, M1 ]
+    tilesFromString "111m" --> [ M1, M1, M1 ]
 
-    tilesFromString "123m"
-    --> [ M1, M2, M3 ]
+    tilesFromString "123m" --> [ M1, M2, M3 ]
 
-    tilesFromString "13m2p1s1z"
-    --> [ M1, M3, P2, S1, East ]
+    tilesFromString "13m2p1s1z" --> [ M1, M3, P2, S1, East ]
 
     tilesFromString "19m19p19s12334567z"
     --> [ M1, M9, P1, P9, S1, S9, East, South, West, West, North, White, Green, Red ]
@@ -962,6 +1126,12 @@ type alias TilesPerCategory =
     }
 
 
+{-|
+
+    partitionByCategory [ M1, M2, M3, P1, P1, S1, East, South, West, White ]
+    --> { man = [ M1, M2, M3 ], pin = [ P1, P1 ], sou = [ S1 ], honor = [ East, South, West, White ] }
+
+-}
 partitionByCategory : List Tile -> TilesPerCategory
 partitionByCategory tiles =
     List.foldr

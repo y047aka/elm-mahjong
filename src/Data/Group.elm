@@ -303,6 +303,16 @@ isPartial group =
             True
 
 
+{-|
+
+    import Data.Tile exposing (Tile(..))
+
+    completionScore [] --> { groups = 0, pairs = 0, partials = 0 }
+    completionScore [ ( Triplet M1 M1 M1 ), ( Triplet East East East ) ] --> { groups = 2, pairs = 0, partials = 0 }
+    completionScore [ ( Pair M1 M1 ), ( Pair East East ) ] --> { groups = 0, pairs = 2, partials = 0 }
+    completionScore [ ( PartialPenchan M1 M2 ), ( PartialKanchan M7 M9 ) ]
+
+-}
 completionScore : List Group -> CompletionScore
 completionScore groups =
     let

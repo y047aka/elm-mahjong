@@ -770,6 +770,11 @@ fromComparable comparable =
             Nothing
 
 
+{-|
+
+    countTiles [ M1, M1, M1, M2, M3 ] --> [ ( M1, 3 ), ( M2, 1 ), ( M3, 1 ) ]
+
+-}
 countTiles : List Tile -> List ( Tile, Int )
 countTiles tiles =
     List.Extra.gatherEquals tiles

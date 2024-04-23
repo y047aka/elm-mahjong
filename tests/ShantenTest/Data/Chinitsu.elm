@@ -1,4 +1,4 @@
-module ShantenTest.Data.Chinitsu exposing (..)
+module ShantenTest.Data.Chinitsu exposing (data)
 
 
 data : String

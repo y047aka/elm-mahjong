@@ -481,12 +481,29 @@ isSameCategory3 a b c =
 
     isTriplet ( M1, M2, M3 ) --> False
 
+    isTriplet ( M5 True, M5 False, M5 False ) --> True
+
     isTriplet ( East, East, East ) --> True
 
 -}
 isTriplet : ( Tile, Tile, Tile ) -> Bool
 isTriplet ( a, b, c ) =
-    a == b && b == c
+    let
+        isTripletOfFive =
+            case ( a, b, c ) of
+                ( M5 _, M5 _, M5 _ ) ->
+                    True
+
+                ( P5 _, P5 _, P5 _ ) ->
+                    True
+
+                ( S5 _, S5 _, S5 _ ) ->
+                    True
+
+                _ ->
+                    False
+    in
+    (a == b && b == c) || isTripletOfFive
 
 
 {-|
@@ -512,12 +529,29 @@ isRun ( a, b, c ) =
 
     isGang M1 M1 M1 M2 --> False
 
+    isGang (M5 True) (M5 False) (M5 False) (M5 False) --> True
+
     isGang East East East East --> True
 
 -}
 isGang : Tile -> Tile -> Tile -> Tile -> Bool
 isGang a b c d =
-    a == b && b == c && c == d
+    let
+        isGangOfFive =
+            case [ a, b, c, d ] of
+                [ M5 _, M5 _, M5 _, M5 _ ] ->
+                    True
+
+                [ P5 _, P5 _, P5 _, P5 _ ] ->
+                    True
+
+                [ S5 _, S5 _, S5 _, S5 _ ] ->
+                    True
+
+                _ ->
+                    False
+    in
+    (a == b && b == c && c == d) || isGangOfFive
 
 
 {-|
@@ -526,12 +560,29 @@ isGang a b c d =
 
     isPair ( M1, M2 ) --> False
 
+    isPair ( M5 True, M5 False ) --> True
+
     isPair ( East, East ) --> True
 
 -}
 isPair : ( Tile, Tile ) -> Bool
 isPair ( a, b ) =
-    a == b
+    let
+        isPairOfFive =
+            case ( a, b ) of
+                ( M5 _, M5 _ ) ->
+                    True
+
+                ( P5 _, P5 _ ) ->
+                    True
+
+                ( S5 _, S5 _ ) ->
+                    True
+
+                _ ->
+                    False
+    in
+    a == b || isPairOfFive
 
 
 {-|

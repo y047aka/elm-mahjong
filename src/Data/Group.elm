@@ -123,12 +123,12 @@ findGroupsInSuitHelper findPartialsOption suit n shouldFindPair counter =
 
 {-|
 
-    import Array
     import Data.Category exposing (Category(..))
+    import Data.Counter as Counter
     import Data.Tile exposing (Tile(..))
 
-    consumeRun FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
-    consumeRun FindPartials Man 0 True (Array.fromList [ 0, 1, 1, 0, 0, 0, 0, 0, 0 ]) 1 --> Just [[Run M1 M2 M3]]
+    consumeRun FindPartials Honor 0 True (Counter.fromTileList []) 0 --> Nothing
+    consumeRun FindPartials Man 0 True (Counter.fromTileList [ M2, M3 ]) 1 --> Just [[Run M1 M2 M3]]
 
 -}
 consumeRun : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
@@ -165,12 +165,12 @@ consumeRun findPartialsOption suit n shouldFindPair counter count =
 
 {-|
 
-    import Array
     import Data.Category exposing (Category(..))
+    import Data.Counter as Counter
     import Data.Tile exposing (Tile(..))
 
-    consumePair FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
-    consumePair FindPartials Man 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 2 --> Just [ [ Pair M1 M1 ] ]
+    consumePair FindPartials Honor 0 True (Counter.fromTileList []) 0 --> Nothing
+    consumePair FindPartials Man 0 True (Counter.fromTileList []) 2 --> Just [ [ Pair M1 M1 ] ]
 
 -}
 consumePair : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
@@ -189,12 +189,12 @@ consumePair findPartialsOption suit n shouldFindPair counter count =
 
 {-|
 
-    import Array
     import Data.Category exposing (Category(..))
+    import Data.Counter as Counter
     import Data.Tile exposing (Tile(..))
 
-    consumeTriplet FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
-    consumeTriplet FindPartials Man 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 3 --> Just [[Triplet M1 M1 M1]]
+    consumeTriplet FindPartials Honor 0 True (Counter.fromTileList []) 0 --> Nothing
+    consumeTriplet FindPartials Man 0 True (Counter.fromTileList []) 3 --> Just [[Triplet M1 M1 M1]]
 
 -}
 consumeTriplet : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
@@ -214,10 +214,10 @@ consumeTriplet findPartialsOption suit n shouldFindPair counter count =
 
 {-|
 
-    import Array
     import Data.Category exposing (Category(..))
+    import Data.Counter as Counter
 
-    consumePartialRyanmenPenchan FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+    consumePartialRyanmenPenchan FindPartials Honor 0 True (Counter.fromTileList []) 0 --> Nothing
 
 -}
 consumePartialRyanmenPenchan : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
@@ -246,10 +246,10 @@ consumePartialRyanmenPenchan findPartialsOption suit n shouldFindPair counter co
 
 {-|
 
-    import Array
     import Data.Category exposing (Category(..))
+    import Data.Counter as Counter
 
-    consumePartialKanchan FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+    consumePartialKanchan FindPartials Honor 0 True (Counter.fromTileList []) 0 --> Nothing
 
 -}
 consumePartialKanchan : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))

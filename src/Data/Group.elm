@@ -1,4 +1,4 @@
-module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups)
+module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit)
 
 import Array
 import Data.Category exposing (Category(..))
@@ -61,6 +61,13 @@ findGroups findPartialGroups tiles =
     }
 
 
+{-|
+
+    import Data.Category exposing (Category(..))
+
+    findGroupsInSuit FindPartials Man [] --> []
+
+-}
 findGroupsInSuit : FindPartialsOption -> Category -> List Tile -> List (List Group)
 findGroupsInSuit findPartialsOption suit tiles =
     List.map Tile.tileToInt tiles

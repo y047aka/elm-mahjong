@@ -1,4 +1,4 @@
-module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, findGroups)
+module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups)
 
 import Array
 import Data.Category exposing (Category(..))
@@ -17,9 +17,9 @@ type Group
 
 
 type alias GroupsPerSuit =
-    { sou : List (List Group)
-    , man : List (List Group)
+    { man : List (List Group)
     , pin : List (List Group)
+    , sou : List (List Group)
     , honor : List (List Group)
     }
 
@@ -40,6 +40,12 @@ type alias CompletionScore =
     }
 
 
+{-|
+
+    findGroups FindPartials []
+    --> { perSuit = { sou = [], man = [], pin = [], honor = [] } }
+
+-}
 findGroups : FindPartialsOption -> List Tile -> GroupsBreakdown
 findGroups findPartialGroups tiles =
     let
@@ -47,9 +53,9 @@ findGroups findPartialGroups tiles =
             Tile.partitionByCategory tiles
     in
     { perSuit =
-        { sou = findGroupsInSuit findPartialGroups Sou part.sou
-        , man = findGroupsInSuit findPartialGroups Man part.man
+        { man = findGroupsInSuit findPartialGroups Man part.man
         , pin = findGroupsInSuit findPartialGroups Pin part.pin
+        , sou = findGroupsInSuit findPartialGroups Sou part.sou
         , honor = findGroupsInSuit findPartialGroups Honor part.honor
         }
     }
@@ -110,6 +116,16 @@ findGroupsInSuitHelper findPartialsOption suit n shouldFindPair counter =
             |> map2RetainJust List.append skipTile
 
 
+{-|
+
+    import Array
+    import Data.Category exposing (Category(..))
+    import Data.Tile exposing (Tile(..))
+
+    consumeRun FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+    consumeRun FindPartials Man 0 True (Array.fromList [ 0, 1, 1, 0, 0, 0, 0, 0, 0 ]) 1 --> Just [[Run M1 M2 M3]]
+
+-}
 consumeRun : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumeRun findPartialsOption suit n shouldFindPair counter count =
     let
@@ -142,6 +158,16 @@ consumeRun findPartialsOption suit n shouldFindPair counter count =
         Nothing
 
 
+{-|
+
+    import Array
+    import Data.Category exposing (Category(..))
+    import Data.Tile exposing (Tile(..))
+
+    consumePair FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+    consumePair FindPartials Man 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 2 --> Just [ [ Pair M1 M1 ] ]
+
+-}
 consumePair : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumePair findPartialsOption suit n shouldFindPair counter count =
     if count >= 2 && (shouldFindPair || findPartialsOption == FindPartials) then
@@ -156,6 +182,16 @@ consumePair findPartialsOption suit n shouldFindPair counter count =
         Nothing
 
 
+{-|
+
+    import Array
+    import Data.Category exposing (Category(..))
+    import Data.Tile exposing (Tile(..))
+
+    consumeTriplet FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+    consumeTriplet FindPartials Man 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 3 --> Just [[Triplet M1 M1 M1]]
+
+-}
 consumeTriplet : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumeTriplet findPartialsOption suit n shouldFindPair counter count =
     if count >= 3 then
@@ -171,6 +207,14 @@ consumeTriplet findPartialsOption suit n shouldFindPair counter count =
         Nothing
 
 
+{-|
+
+    import Array
+    import Data.Category exposing (Category(..))
+
+    consumePartialRyanmenPenchan FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+
+-}
 consumePartialRyanmenPenchan : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumePartialRyanmenPenchan findPartialsOption suit n shouldFindPair counter count =
     let
@@ -195,6 +239,14 @@ consumePartialRyanmenPenchan findPartialsOption suit n shouldFindPair counter co
         Nothing
 
 
+{-|
+
+    import Array
+    import Data.Category exposing (Category(..))
+
+    consumePartialKanchan FindPartials Honor 0 True (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]) 0 --> Nothing
+
+-}
 consumePartialKanchan : FindPartialsOption -> Category -> Int -> Bool -> Counter.Counter -> Int -> Maybe (List (List Group))
 consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
     let

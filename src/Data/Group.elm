@@ -70,9 +70,7 @@ findGroups findPartialGroups tiles =
 -}
 findGroupsInSuit : FindPartialsOption -> Category -> List Tile -> List (List Group)
 findGroupsInSuit findPartialsOption suit tiles =
-    List.map Tile.tileToInt tiles
-        |> List.sort
-        |> Counter.fromIntList
+    Counter.fromTileList tiles
         |> findGroupsInSuitHelper findPartialsOption suit 0 True
         |> Maybe.withDefault []
         |> List.Extra.remove []

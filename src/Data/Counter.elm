@@ -1,6 +1,7 @@
-module Data.Counter exposing (Counter, fromIntList, getCount)
+module Data.Counter exposing (Counter, fromTileList, getCount)
 
 import Array
+import Data.Tile as Tile exposing (Tile(..))
 
 
 type alias Counter =
@@ -10,22 +11,23 @@ type alias Counter =
 {-|
 
     import Array
+    import Data.Tile exposing (Tile(..))
 
-    fromIntList []
+    fromTileList []
     --> (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ])
 
-    fromIntList [ 1, 9 ]
+    fromTileList [ M1, M9 ]
     --> (Array.fromList [ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
 
-    fromIntList [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+    fromTileList [ M1, M2, M3, M4, M5 False, M6, M7, M8, M9 ]
     --> (Array.fromList [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ])
 
-    fromIntList [ 1, 1, 1 ]
+    fromTileList [ M1, M1, M1 ]
     --> (Array.fromList [ 3, 0, 0, 0, 0, 0, 0, 0, 0 ])
 
 -}
-fromIntList : List Int -> Counter
-fromIntList intList =
+fromTileList : List Tile -> Counter
+fromTileList intList =
     let
         counter =
             Array.initialize 9 (always 0)
@@ -34,7 +36,10 @@ fromIntList intList =
         accum n cnt =
             Array.set (n - 1) (Maybe.withDefault 0 (Array.get (n - 1) cnt) + 1) cnt
     in
-    List.foldl accum counter intList
+    intList
+        |> List.map Tile.tileToInt
+        |> List.sort
+        |> List.foldl accum counter
 
 
 getCount : Int -> Counter -> Int

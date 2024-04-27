@@ -7,6 +7,23 @@ type alias Counter =
     Array.Array Int
 
 
+{-|
+
+    import Array
+
+    fromIntList []
+    --> (Array.fromList [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ])
+
+    fromIntList [ 1, 9 ]
+    --> (Array.fromList [ 1, 0, 0, 0, 0, 0, 0, 0, 1 ])
+
+    fromIntList [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+    --> (Array.fromList [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ])
+
+    fromIntList [ 1, 1, 1 ]
+    --> (Array.fromList [ 3, 0, 0, 0, 0, 0, 0, 0, 0 ])
+
+-}
 fromIntList : List Int -> Counter
 fromIntList intList =
     let

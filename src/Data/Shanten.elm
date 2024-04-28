@@ -99,11 +99,13 @@ shantenStandard tiles =
             Group.findGroups Group.FindPartials tiles
                 |> Group.breakdownCartesianProduct
 
-        -- TODO are the scores different in some configurations?
-        completionScore =
-            Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
+        completionScores =
+            List.map Group.completionScore groupConfigurations
     in
-    { shanten = completionScoreToShanten (List.length tiles) completionScore
+    { shanten =
+        List.map (completionScoreToShanten (List.length tiles)) completionScores
+            |> List.minimum
+            |> Maybe.withDefault 8
     , groups = groupConfigurations
     }
 

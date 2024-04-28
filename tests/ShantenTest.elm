@@ -195,8 +195,9 @@ shantenStandard_debug groups =
             { perSuit = groups }
                 |> Group.breakdownCartesianProduct
 
-        -- TODO are the scores different in some configurations?
-        completionScore =
-            Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
+        completionScores =
+            List.map Group.completionScore groupConfigurations
     in
-    Shanten.completionScoreToShanten 14 completionScore
+    List.map (Shanten.completionScoreToShanten 14) completionScores
+        |> List.minimum
+        |> Maybe.withDefault 8

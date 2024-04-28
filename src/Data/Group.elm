@@ -289,18 +289,22 @@ keepHighestScore : FindPartialsOption -> List (List Group) -> List (List Group)
 keepHighestScore findPartialsOption groups =
     if findPartialsOption == FindPartials then
         let
-            groupsWithScores =
-                List.map (\g -> ( completionScore g, g )) groups
-                    |> List.sortBy (\( cs, _ ) -> ( cs.groups, cs.pairs, cs.partials ))
-                    |> List.reverse
+            usedTiles cs =
+                (cs.groups * 3) + (cs.pairs * 2) + (cs.partials * 2)
 
-            maxScore =
-                List.head groupsWithScores
-                    |> Maybe.withDefault ( { groups = 0, pairs = 0, partials = 0 }, [] )
-                    |> Tuple.first
+            groupsA =
+                List.map (\g -> ( completionScore g, g )) groups
+                    |> List.Extra.minimumBy (\( cs, _ ) -> ( 14 - usedTiles cs, cs.pairs + cs.partials ))
+                    |> Maybe.map Tuple.second
+
+            groupsB =
+                List.map (\g -> ( completionScore g, g )) groups
+                    |> List.Extra.maximumBy (\( cs, _ ) -> ( cs.groups, cs.pairs + cs.partials ))
+                    |> Maybe.map Tuple.second
         in
-        List.filter (\( score, _ ) -> score == maxScore) groupsWithScores
-            |> List.map Tuple.second
+        [ groupsA, groupsB ]
+            |> List.filterMap identity
+            |> List.Extra.unique
 
     else
         -- there are only complete groups and pairs, no need to sort

@@ -11,6 +11,7 @@ module Data.Shanten exposing
 
 import Data.Group as Group exposing (Group)
 import Data.Tile as Tile exposing (Tile)
+import List.Extra
 
 
 {-|
@@ -103,7 +104,8 @@ shantenStandard tiles =
             List.map Group.completionScore groupConfigurations
     in
     { shanten =
-        List.map (completionScoreToShanten (List.length tiles)) completionScores
+        List.Extra.gatherEquals completionScores
+            |> List.map (Tuple.first >> completionScoreToShanten (List.length tiles))
             |> List.minimum
             |> Maybe.withDefault 8
     , groups = groupConfigurations

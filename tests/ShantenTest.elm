@@ -1,6 +1,6 @@
 module ShantenTest exposing (suite)
 
-import Data.Group as Group exposing (Group(..), completionScore)
+import Data.Group as Group exposing (Group(..))
 import Data.Shanten as Shanten
 import Data.Tile as Tile exposing (Tile(..))
 import Expect
@@ -198,6 +198,7 @@ shantenStandard_debug groups =
         completionScores =
             List.map Group.completionScore groupConfigurations
     in
-    List.map (Shanten.completionScoreToShanten 14) completionScores
+    List.Extra.gatherEquals completionScores
+        |> List.map (Tuple.first >> Shanten.completionScoreToShanten 14)
         |> List.minimum
         |> Maybe.withDefault 8

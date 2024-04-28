@@ -1,4 +1,13 @@
-module Data.Shanten exposing (shantenChiitoitsu, shantenKokushi, shantenStandard)
+module Data.Shanten exposing
+    ( shantenKokushi, shantenChiitoitsu, shantenStandard
+    , completionScoreToShanten
+    )
+
+{-|
+
+@docs shantenKokushi, shantenChiitoitsu, shantenStandard
+
+-}
 
 import Data.Group as Group exposing (Group)
 import Data.Tile as Tile exposing (Tile)
@@ -93,7 +102,18 @@ shantenStandard tiles =
         -- TODO are the scores different in some configurations?
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
+    in
+    { shanten = completionScoreToShanten tiles completionScore
+    , groups = groupConfigurations
+    }
 
+
+completionScoreToShanten :
+    List Tile
+    -> { groups : Int, pairs : Int, partials : Int }
+    -> Int
+completionScoreToShanten tiles completionScore =
+    let
         hasPair =
             completionScore.pairs > 0
 
@@ -131,6 +151,4 @@ shantenStandard tiles =
             else
                 d_
     in
-    { shanten = 13 - (m * 3) - (d * 2) - g
-    , groups = groupConfigurations
-    }
+    13 - (m * 3) - (d * 2) - g

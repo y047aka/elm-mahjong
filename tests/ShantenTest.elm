@@ -198,42 +198,5 @@ shantenStandard_debug groups =
         -- TODO are the scores different in some configurations?
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
-
-        hasPair =
-            completionScore.pairs > 0
-
-        n =
-            if hasPair then
-                4
-
-            else
-                5
-
-        pairs_ =
-            if hasPair then
-                completionScore.pairs - 1
-
-            else
-                0
-
-        m =
-            min 4 completionScore.groups
-
-        d_ =
-            min (4 - m) (pairs_ + completionScore.partials)
-
-        g =
-            let
-                unusedTiles =
-                    14 - (m * 3) - (d_ * 2)
-            in
-            min (n - m - d_) unusedTiles
-
-        d =
-            if hasPair then
-                d_ + 1
-
-            else
-                d_
     in
-    13 - (m * 3) - (d * 2) - g
+    Shanten.completionScoreToShanten (List.repeat 14 M1) completionScore

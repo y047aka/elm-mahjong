@@ -1,7 +1,8 @@
 module ShantenTest exposing (suite)
 
+import Data.Group as Group exposing (Group(..), completionScore)
 import Data.Shanten as Shanten
-import Data.Tile as Tile exposing (Tile)
+import Data.Tile as Tile exposing (Tile(..))
 import Expect
 import Fuzz exposing (Fuzzer)
 import List.Extra
@@ -30,9 +31,8 @@ suite =
             [ fuzz oneOfChinitsuData "fuzzingShantenStandard" <|
                 \d ->
                     Shanten.shantenStandard d.tiles |> .shanten |> Expect.equal d.shantenStandard
-
-            -- , describe "shantenStandard 10,000 cases"
-            --     test10000_shantenStandard
+            , describe "shantenStandard 10,000 cases"
+                test10000_shantenStandard
             ]
         , describe "shantenKokushi"
             [ fuzz oneOfKokushiData "fuzzingShantenKokushi" <|
@@ -49,6 +49,35 @@ suite =
 
             -- , describe "shantenChiitoitsu 10,000 cases"
             --     test10000_shantenChiitoitsu
+            ]
+        , describe "shantenStandard_debug"
+            [ test "0. 4556m33p2234457s1z" <|
+                \() ->
+                    shantenStandard_debug
+                        { man = [ [ Run M4 (M5 False) M6 ] ]
+                        , pin = [ [ Pair P3 P3 ] ]
+                        , sou = [ [ Run S2 S3 S4, PartialKanchan S2 S4, PartialKanchan (S5 False) S7 ], [ Pair S2 S2, Run S3 S4 (S5 False) ] ]
+                        , honor = []
+                        }
+                        |> Expect.equal 1
+            , test "5. 7778m23445p456s16z" <|
+                \() ->
+                    shantenStandard_debug
+                        { man = [ [ Triplet M7 M7 M7 ] ]
+                        , pin = [ [ Run P2 P3 P4, PartialPenchan P4 (P5 False) ], [ PartialKanchan P2 P4, Run P3 P4 (P5 False) ] ]
+                        , sou = [ [ Run S4 (S5 False) S6 ] ]
+                        , honor = []
+                        }
+                        |> Expect.equal 1
+            , test "28. 147m234666p56678s" <|
+                \() ->
+                    shantenStandard_debug
+                        { man = []
+                        , pin = [ [ Run P2 P3 P4, Triplet P6 P6 P6 ] ]
+                        , sou = [ [ Run (S5 False) S6 S7, PartialKanchan S6 S8 ], [ PartialPenchan (S5 False) S6, Run S6 S7 S8 ] ]
+                        , honor = []
+                        }
+                        |> Expect.equal 1
             ]
         ]
 
@@ -96,7 +125,7 @@ test10000_shantenStandard =
             test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
                 \_ -> Shanten.shantenStandard c.tiles |> .shanten |> Expect.equal c.shantenStandard
     in
-    casesFromString Chinitsu.data
+    casesFromString Standard.data
         |> List.indexedMap testShantenStandard
 
 
@@ -151,3 +180,64 @@ caseFromString str =
     , shantenKokushi = shantenKokushi_
     , shantenChiitoitsu = shantenChiitoitsu_
     }
+
+
+shantenStandard_debug :
+    { man : List (List Group)
+    , pin : List (List Group)
+    , sou : List (List Group)
+    , honor : List (List Group)
+    }
+    -> Int
+shantenStandard_debug groups =
+    let
+        groupConfigurations =
+            { perSuit = groups }
+                |> Group.breakdownCartesianProduct
+
+        -- TODO are the scores different in some configurations?
+        completionScore =
+            Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
+
+        n =
+            if completionScore.pairs > 0 then
+                4
+
+            else
+                5
+
+        pairs_ =
+            if completionScore.pairs > 0 then
+                completionScore.pairs - 1
+
+            else
+                0
+
+        m =
+            min 4 completionScore.groups
+
+        d_ =
+            if completionScore.groups + pairs_ + completionScore.partials > 4 then
+                4 - m
+
+            else
+                pairs_ + completionScore.partials
+
+        g_ =
+            14 - (m * 3) - (d_ * 2)
+
+        g =
+            if m + d_ + g_ > n then
+                n - m - d_
+
+            else
+                g_
+
+        d =
+            if completionScore.pairs > 0 then
+                d_ + 1
+
+            else
+                d_
+    in
+    13 - (m * 3) - (d * 2) - g

@@ -1,4 +1,4 @@
-module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit)
+module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit, keepHighestScore)
 
 import Array
 import Data.Category exposing (Category(..))
@@ -276,6 +276,15 @@ consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
         Nothing
 
 
+{-|
+
+    import Data.Tile exposing (Tile(..))
+
+    keepHighestScore FindPartials [] --> []
+    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ] ] --> [ [ Triplet M1 M1 M1 ] ]
+    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ], [ PartialKanchan M1 M3 ] ] --> [ [ Triplet M1 M1 M1 ] ]
+
+-}
 keepHighestScore : FindPartialsOption -> List (List Group) -> List (List Group)
 keepHighestScore findPartialsOption groups =
     if findPartialsOption == FindPartials then
@@ -364,10 +373,17 @@ isPartial group =
 
     import Data.Tile exposing (Tile(..))
 
-    completionScore [] --> { groups = 0, pairs = 0, partials = 0 }
-    completionScore [ ( Triplet M1 M1 M1 ), ( Triplet East East East ) ] --> { groups = 2, pairs = 0, partials = 0 }
-    completionScore [ ( Pair M1 M1 ), ( Pair East East ) ] --> { groups = 0, pairs = 2, partials = 0 }
+    completionScore []
+    --> { groups = 0, pairs = 0, partials = 0 }
+
+    completionScore [ ( Triplet M1 M1 M1 ), ( Triplet East East East ) ]
+    --> { groups = 2, pairs = 0, partials = 0 }
+
+    completionScore [ ( Pair M1 M1 ), ( Pair East East ) ]
+    --> { groups = 0, pairs = 2, partials = 0 }
+
     completionScore [ ( PartialPenchan M1 M2 ), ( PartialKanchan M7 M9 ) ]
+    --> { groups = 0, pairs = 0, partials = 2 }
 
 -}
 completionScore : List Group -> CompletionScore

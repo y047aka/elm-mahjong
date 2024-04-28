@@ -94,51 +94,47 @@ shantenStandard tiles =
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
 
-        noPairPenalty =
-            let
-                usedTiles =
-                    3 * completionScore.groups + 2 * (completionScore.pairs + completionScore.partials)
+        n =
+            if completionScore.pairs > 0 then
+                4
 
-                -- if unusedTiles == 2, any of those tiles is candidate for a pair, after discarding the other one
-                unusedTiles =
-                    List.length tiles - usedTiles
-            in
-            if completionScore.pairs == 0 && List.member (List.length tiles) [ 5, 8, 11, 14 ] && unusedTiles /= 2 then
-                1
+            else
+                5
+
+        pairs_ =
+            if completionScore.pairs > 0 then
+                completionScore.pairs - 1
 
             else
                 0
 
-        tooManyGroupsPenalty =
-            let
-                scoreSum =
-                    completionScore.groups + completionScore.pairs + completionScore.partials
-            in
-            max 0 (scoreSum - 5)
+        m =
+            min 4 completionScore.groups
 
-        baselineScore =
-            case List.length tiles of
-                4 ->
-                    2
+        d_ =
+            if completionScore.groups + pairs_ + completionScore.partials > 4 then
+                4 - m
 
-                5 ->
-                    2
+            else
+                pairs_ + completionScore.partials
 
-                7 ->
-                    4
+        g_ =
+            List.length tiles - (m * 3) - (d_ * 2)
 
-                8 ->
-                    4
+        g =
+            if m + d_ + g_ > n then
+                n - m - d_
 
-                10 ->
-                    6
+            else
+                g_
 
-                11 ->
-                    6
+        d =
+            if completionScore.pairs > 0 then
+                d_ + 1
 
-                _ ->
-                    8
+            else
+                d_
     in
-    { shanten = baselineScore - 2 * completionScore.groups - completionScore.pairs - completionScore.partials + noPairPenalty + tooManyGroupsPenalty
+    { shanten = 13 - (m * 3) - (d * 2) - g
     , groups = groupConfigurations
     }

@@ -200,10 +200,10 @@ shantenStandard tiles =
 
 -}
 completionScoreToShanten : Int -> { groups : Int, pairs : Int, partials : Int } -> Int
-completionScoreToShanten tilesLength completionScore =
+completionScoreToShanten tilesLength cs =
     let
         hasPair =
-            completionScore.pairs > 0
+            cs.pairs > 0
 
         n =
             if hasPair then
@@ -214,16 +214,16 @@ completionScoreToShanten tilesLength completionScore =
 
         pairs_ =
             if hasPair then
-                completionScore.pairs - 1
+                cs.pairs - 1
 
             else
                 0
 
         m =
-            min 4 completionScore.groups
+            min 4 cs.groups
 
         d_ =
-            min (4 - m) (pairs_ + completionScore.partials)
+            min (4 - m) (pairs_ + cs.partials)
 
         g =
             let

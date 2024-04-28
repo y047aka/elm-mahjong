@@ -199,15 +199,18 @@ shantenStandard_debug groups =
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
 
+        hasPair =
+            completionScore.pairs > 0
+
         n =
-            if completionScore.pairs > 0 then
+            if hasPair then
                 4
 
             else
                 5
 
         pairs_ =
-            if completionScore.pairs > 0 then
+            if hasPair then
                 completionScore.pairs - 1
 
             else
@@ -217,24 +220,17 @@ shantenStandard_debug groups =
             min 4 completionScore.groups
 
         d_ =
-            if completionScore.groups + pairs_ + completionScore.partials > 4 then
-                4 - m
-
-            else
-                pairs_ + completionScore.partials
-
-        g_ =
-            14 - (m * 3) - (d_ * 2)
+            min (4 - m) (pairs_ + completionScore.partials)
 
         g =
-            if m + d_ + g_ > n then
-                n - m - d_
-
-            else
-                g_
+            let
+                unusedTiles =
+                    14 - (m * 3) - (d_ * 2)
+            in
+            min (n - m - d_) unusedTiles
 
         d =
-            if completionScore.pairs > 0 then
+            if hasPair then
                 d_ + 1
 
             else

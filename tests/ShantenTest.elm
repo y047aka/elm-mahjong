@@ -199,4 +199,4 @@ shantenStandard_debug groups =
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
     in
-    Shanten.completionScoreToShanten (List.repeat 14 M1) completionScore
+    Shanten.completionScoreToShanten 14 completionScore

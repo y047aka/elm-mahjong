@@ -103,16 +103,104 @@ shantenStandard tiles =
         completionScore =
             Group.completionScore (List.head groupConfigurations |> Maybe.withDefault [])
     in
-    { shanten = completionScoreToShanten tiles completionScore
+    { shanten = completionScoreToShanten (List.length tiles) completionScore
     , groups = groupConfigurations
     }
 
 
-completionScoreToShanten :
-    List Tile
-    -> { groups : Int, pairs : Int, partials : Int }
-    -> Int
-completionScoreToShanten tiles completionScore =
+{-|
+
+    completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 0 } --> 8
+
+    七向聴：
+
+    completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 1 } --> 7
+    completionScoreToShanten 13 { groups = 0, pairs = 1, partials = 0 } --> 7
+
+    六向聴：
+
+    completionScoreToShanten 13 { groups = 1, pairs = 0, partials = 0 } --> 6
+
+    completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 2 } --> 6
+    completionScoreToShanten 13 { groups = 0, pairs = 1, partials = 1 } --> 6
+    completionScoreToShanten 13 { groups = 0, pairs = 2, partials = 0 } --> 6
+
+    五向聴：
+
+    completionScoreToShanten 13 { groups = 1, pairs = 0, partials = 1 } --> 5
+    completionScoreToShanten 13 { groups = 1, pairs = 1, partials = 0 } --> 5
+
+    completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 3 } --> 5
+    completionScoreToShanten 13 { groups = 0, pairs = 1, partials = 2 } --> 5
+    completionScoreToShanten 13 { groups = 0, pairs = 2, partials = 1 } --> 5
+    completionScoreToShanten 13 { groups = 0, pairs = 3, partials = 0 } --> 5
+
+    四向聴：
+
+    completionScoreToShanten 13 { groups = 2, pairs = 0, partials = 0 } --> 4
+
+    completionScoreToShanten 13 { groups = 1, pairs = 0, partials = 2 } --> 4
+    completionScoreToShanten 13 { groups = 1, pairs = 1, partials = 1 } --> 4
+    completionScoreToShanten 13 { groups = 1, pairs = 2, partials = 0 } --> 4
+
+    completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 4 } --> 4
+    completionScoreToShanten 13 { groups = 0, pairs = 1, partials = 3 } --> 4
+    completionScoreToShanten 13 { groups = 0, pairs = 2, partials = 2 } --> 4
+    completionScoreToShanten 13 { groups = 0, pairs = 3, partials = 1 } --> 4
+    completionScoreToShanten 13 { groups = 0, pairs = 4, partials = 0 } --> 4
+
+    三向聴：
+
+    completionScoreToShanten 13 { groups = 2, pairs = 0, partials = 1 } --> 3
+    completionScoreToShanten 13 { groups = 2, pairs = 1, partials = 0 } --> 3
+
+    completionScoreToShanten 13 { groups = 1, pairs = 0, partials = 3 } --> 3
+    completionScoreToShanten 13 { groups = 1, pairs = 1, partials = 2 } --> 3
+    completionScoreToShanten 13 { groups = 1, pairs = 2, partials = 1 } --> 3
+    completionScoreToShanten 13 { groups = 1, pairs = 3, partials = 0 } --> 3
+
+    completionScoreToShanten 13 { groups = 0, pairs = 1, partials = 4 } --> 3
+    completionScoreToShanten 13 { groups = 0, pairs = 2, partials = 3 } --> 3
+    completionScoreToShanten 13 { groups = 0, pairs = 3, partials = 2 } --> 3
+    completionScoreToShanten 13 { groups = 0, pairs = 4, partials = 1 } --> 3
+    completionScoreToShanten 13 { groups = 0, pairs = 5, partials = 0 } --> 3
+
+    二向聴：
+
+    completionScoreToShanten 13 { groups = 3, pairs = 0, partials = 0 } --> 2
+
+    completionScoreToShanten 13 { groups = 2, pairs = 0, partials = 2 } --> 2
+    completionScoreToShanten 13 { groups = 2, pairs = 1, partials = 1 } --> 2
+    completionScoreToShanten 13 { groups = 2, pairs = 2, partials = 0 } --> 2
+
+    completionScoreToShanten 13 { groups = 1, pairs = 1, partials = 3 } --> 2
+    completionScoreToShanten 13 { groups = 1, pairs = 2, partials = 2 } --> 2
+    completionScoreToShanten 13 { groups = 1, pairs = 3, partials = 1 } --> 2
+    completionScoreToShanten 13 { groups = 1, pairs = 4, partials = 0 } --> 2
+
+    一向聴：
+
+    completionScoreToShanten 13 { groups = 3, pairs = 0, partials = 1 } --> 1
+    completionScoreToShanten 13 { groups = 3, pairs = 1, partials = 0 } --> 1
+
+    completionScoreToShanten 13 { groups = 2, pairs = 1, partials = 2 } --> 1
+    completionScoreToShanten 13 { groups = 2, pairs = 2, partials = 1 } --> 1
+    completionScoreToShanten 13 { groups = 2, pairs = 3, partials = 0 } --> 1
+
+    聴牌：
+
+    completionScoreToShanten 13 { groups = 4, pairs = 0, partials = 0 } --> 0
+
+    completionScoreToShanten 13 { groups = 3, pairs = 1, partials = 1 } --> 0
+    completionScoreToShanten 13 { groups = 3, pairs = 2, partials = 0 } --> 0
+
+    和了：
+
+    completionScoreToShanten 13 { groups = 4, pairs = 1, partials = 0 } --> -1
+
+-}
+completionScoreToShanten : Int -> { groups : Int, pairs : Int, partials : Int } -> Int
+completionScoreToShanten tilesLength completionScore =
     let
         hasPair =
             completionScore.pairs > 0
@@ -140,7 +228,7 @@ completionScoreToShanten tiles completionScore =
         g =
             let
                 unusedTiles =
-                    List.length tiles - (m * 3) - (d_ * 2)
+                    tilesLength - (m * 3) - (d_ * 2)
             in
             min (n - m - d_) unusedTiles
 

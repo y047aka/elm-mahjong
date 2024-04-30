@@ -282,7 +282,7 @@ consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
 
     keepHighestScore FindPartials [] --> []
     keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ] ] --> [ [ Triplet M1 M1 M1 ] ]
-    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ], [ PartialKanchan M1 M3 ] ] --> [ [ Triplet M1 M1 M1 ],[ PartialKanchan M1 M3 ] ]
+    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ], [ PartialKanchan M1 M3 ] ] --> [ [ Triplet M1 M1 M1 ] ]
 
 -}
 keepHighestScore : FindPartialsOption -> List (List Group) -> List (List Group)
@@ -311,7 +311,7 @@ keepHighestScore findPartialsOption groups =
 
             groupD =
                 partitionByCompletionScore
-                    |> List.filter (\( ( cs, _ ), _ ) -> cs.partials > 0)
+                    |> List.filter (\( ( cs, _ ), _ ) -> cs.pairs > 0)
                     |> List.Extra.maximumBy (\( ( cs, _ ), _ ) -> ( cs.groups, cs.pairs + cs.partials ))
         in
         [ groupsA, groupsB, groupC, groupD ]

@@ -1,17 +1,48 @@
 module Data.Shanten exposing
-    ( shantenKokushi, shantenChiitoitsu, shantenStandard
+    ( ShantenSummary, shantenSummary
+    , shantenKokushi, shantenChiitoitsu, shantenStandard
     , completionScoreToShanten
     )
 
 {-|
 
+@docs ShantenSummary, shantenSummary
 @docs shantenKokushi, shantenChiitoitsu, shantenStandard
 
 -}
 
-import Data.Group as Group exposing (Group)
+import Data.Group as Group
 import Data.Tile as Tile exposing (Tile)
 import List.Extra
+
+
+type alias ShantenSummary =
+    { standard : Int
+    , chiitoitsu : Int
+    , kokushi : Int
+    , minimum : Int
+    }
+
+
+shantenSummary : List Tile -> ShantenSummary
+shantenSummary tiles =
+    let
+        standard =
+            shantenStandard tiles
+
+        chiitoitsu =
+            shantenChiitoitsu tiles
+
+        kokushi =
+            shantenKokushi tiles
+    in
+    { standard = standard
+    , chiitoitsu = chiitoitsu
+    , kokushi = kokushi
+    , minimum =
+        List.minimum [ standard, chiitoitsu, kokushi ]
+            |> Maybe.withDefault 8
+    }
 
 
 {-|
@@ -77,23 +108,17 @@ shantenChiitoitsu tiles =
     13 - (clampedDuiziCount * 2) - clampedGuliCount
 
 
-type alias ShantenCalculation =
-    { shanten : Int
-    , groups : List (List Group)
-    }
-
-
 {-|
 
     import Data.Tile exposing (tilesFromString)
 
-    shantenStandard (tilesFromString "46789m55779p457s") |> .shanten --> 2
-    shantenStandard (tilesFromString "456m567p12388s77z") |> .shanten --> 0
-    shantenStandard (tilesFromString "11122456677889p") |> .shanten --> -1
-    shantenStandard (tilesFromString "3367m11123p1267s3m") |> .shanten --> 1
+    shantenStandard (tilesFromString "46789m55779p457s") --> 2
+    shantenStandard (tilesFromString "456m567p12388s77z") --> 0
+    shantenStandard (tilesFromString "11122456677889p") --> -1
+    shantenStandard (tilesFromString "3367m11123p1267s3m") --> 1
 
 -}
-shantenStandard : List Tile -> ShantenCalculation
+shantenStandard : List Tile -> Int
 shantenStandard tiles =
     let
         groupConfigurations =
@@ -103,16 +128,15 @@ shantenStandard tiles =
         completionScores =
             List.map Group.completionScore groupConfigurations
     in
-    { shanten =
-        List.Extra.gatherEquals completionScores
-            |> List.map (Tuple.first >> completionScoreToShanten (List.length tiles))
-            |> List.minimum
-            |> Maybe.withDefault 8
-    , groups = groupConfigurations
-    }
+    List.Extra.gatherEquals completionScores
+        |> List.map (Tuple.first >> completionScoreToShanten (List.length tiles))
+        |> List.minimum
+        |> Maybe.withDefault 8
 
 
 {-|
+
+    八向聴：
 
     completionScoreToShanten 13 { groups = 0, pairs = 0, partials = 0 } --> 8
 

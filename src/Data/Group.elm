@@ -282,7 +282,7 @@ consumePartialKanchan findPartialsOption suit n shouldFindPair counter count =
 
     keepHighestScore FindPartials [] --> []
     keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ] ] --> [ [ Triplet M1 M1 M1 ] ]
-    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ], [ PartialKanchan M1 M3 ] ] --> [ [ Triplet M1 M1 M1 ] ]
+    keepHighestScore FindPartials [ [ Triplet M1 M1 M1 ], [ PartialKanchan M1 M3 ] ] --> [ [ Triplet M1 M1 M1 ],[ PartialKanchan M1 M3 ] ]
 
 -}
 keepHighestScore : FindPartialsOption -> List (List Group) -> List (List Group)
@@ -292,19 +292,33 @@ keepHighestScore findPartialsOption groups =
             usedTiles cs =
                 (cs.groups * 3) + (cs.pairs * 2) + (cs.partials * 2)
 
-            groupsA =
+            partitionByCompletionScore =
                 List.map (\g -> ( completionScore g, g )) groups
-                    |> List.Extra.minimumBy (\( cs, _ ) -> ( 14 - usedTiles cs, cs.pairs + cs.partials ))
-                    |> Maybe.map Tuple.second
+                    |> List.Extra.gatherEqualsBy Tuple.first
+
+            groupsA =
+                partitionByCompletionScore
+                    |> List.Extra.minimumBy (\( ( cs, _ ), _ ) -> ( 14 - usedTiles cs, cs.pairs + cs.partials ))
 
             groupsB =
-                List.map (\g -> ( completionScore g, g )) groups
-                    |> List.Extra.maximumBy (\( cs, _ ) -> ( cs.groups, cs.pairs + cs.partials ))
-                    |> Maybe.map Tuple.second
+                partitionByCompletionScore
+                    |> List.Extra.maximumBy (\( ( cs, _ ), _ ) -> ( cs.groups, cs.pairs + cs.partials ))
+
+            groupC =
+                partitionByCompletionScore
+                    |> List.filter (\( ( cs, _ ), _ ) -> cs.pairs > 0)
+                    |> List.Extra.minimumBy (\( ( cs, _ ), _ ) -> ( 14 - usedTiles cs, cs.pairs + cs.partials ))
+
+            groupD =
+                partitionByCompletionScore
+                    |> List.filter (\( ( cs, _ ), _ ) -> cs.partials > 0)
+                    |> List.Extra.maximumBy (\( ( cs, _ ), _ ) -> ( cs.groups, cs.pairs + cs.partials ))
         in
-        [ groupsA, groupsB ]
+        [ groupsA, groupsB, groupC, groupD ]
             |> List.filterMap identity
-            |> List.Extra.unique
+            |> List.Extra.uniqueBy (\( ( cs, _ ), _ ) -> cs)
+            |> List.concatMap (\( head, tails ) -> head :: tails)
+            |> List.map Tuple.second
 
     else
         -- there are only complete groups and pairs, no need to sort

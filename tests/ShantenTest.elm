@@ -47,14 +47,14 @@ suite =
             ]
 
         -- , describe "shantenSummary 10,000 cases"
-        --     [ describe "Standard.data"
-        --         test10000_Standard
-        --     , describe "Kokushi.data"
-        --         test10000_Kokushi
-        --     , describe "Honitsu.data"
-        --         test10000_Honitsu
-        --     , describe "Chinitsu.data"
-        --         test10000_Chinitsu
+        --     [ describe "Standard.data" <|
+        --         test10000 Standard.data
+        --     , describe "Kokushi.data" <|
+        --         test10000 Kokushi.data
+        --     , describe "Honitsu.data" <|
+        --         test10000 Honitsu.data
+        --     , describe "Chinitsu.data" <|
+        --         test10000 Chinitsu.data
         --     ]
         ]
 
@@ -105,54 +105,16 @@ caseToShantenSummary { standard, kokushi, chiitoitsu, minimum } =
     }
 
 
-test10000_Standard : List Test
-test10000_Standard =
+test10000 : String -> List Test
+test10000 data =
     let
-        test_Standard index c =
+        test_ index c =
             test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
                 \_ -> Shanten.shantenSummary c.tiles |> Expect.equal (caseToShantenSummary c)
     in
-    casesFromString Standard.data
-        |> List.indexedMap test_Standard
-
-
-test10000_Kokushi : List Test
-test10000_Kokushi =
-    let
-        test_Kokushi index c =
-            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
-                \_ -> Shanten.shantenSummary c.tiles |> Expect.equal (caseToShantenSummary c)
-    in
-    casesFromString Kokushi.data
-        |> List.indexedMap test_Kokushi
-
-
-test10000_Honitsu : List Test
-test10000_Honitsu =
-    let
-        test_Honitsu index c =
-            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
-                \_ -> Shanten.shantenSummary c.tiles |> Expect.equal (caseToShantenSummary c)
-    in
-    casesFromString Honitsu.data
-        |> List.indexedMap test_Honitsu
-
-
-test10000_Chinitsu : List Test
-test10000_Chinitsu =
-    let
-        test_Chinitsu index c =
-            test (String.fromInt index ++ ". " ++ Tile.tilesToString c.tiles) <|
-                \_ -> Shanten.shantenSummary c.tiles |> Expect.equal (caseToShantenSummary c)
-    in
-    casesFromString Chinitsu.data
-        |> List.indexedMap test_Chinitsu
-
-
-casesFromString : String -> List Case
-casesFromString str =
-    String.lines str
+    String.lines data
         |> List.map caseFromString
+        |> List.indexedMap test_
 
 
 caseFromString : String -> Case

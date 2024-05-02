@@ -29,7 +29,7 @@ import List.Extra
 type alias Yaku =
     { name : String
     , hanType : HanType
-    , condition : HandState -> Bool
+    , situation : HandState -> Bool
     }
 
 
@@ -104,7 +104,7 @@ type Situation
 
 check : Yaku -> HandState -> Bool
 check yaku state =
-    yaku.condition state
+    yaku.situation state
 
 
 
@@ -123,7 +123,7 @@ menzenTsumo : Yaku
 menzenTsumo =
     { name = "門前清自摸和"
     , hanType = One
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, WinByTsumo ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, WinByTsumo ] situations
     }
 
 
@@ -139,7 +139,7 @@ reach : Yaku
 reach =
     { name = "立直"
     , hanType = One
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -155,7 +155,7 @@ ippatsu : Yaku
 ippatsu =
     { name = "一発"
     , hanType = One
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -171,7 +171,7 @@ yakuhai : Yaku
 yakuhai =
     { name = "役牌"
     , hanType = One
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -187,7 +187,7 @@ pinfu : Yaku
 pinfu =
     { name = "平和"
     , hanType = One
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -205,7 +205,7 @@ tanyao : Yaku
 tanyao =
     { name = "断么九"
     , hanType = One
-    , condition = \{ hand } -> hand == Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2
+    , situation = \{ hand } -> hand == Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2
     }
 
 
@@ -223,7 +223,7 @@ ipeko : Yaku
 ipeko =
     { name = "一盃口"
     , hanType = One
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White)
     }
 
 
@@ -239,7 +239,7 @@ haitei : Yaku
 haitei =
     { name = "海底摸月"
     , hanType = One
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -255,7 +255,7 @@ houtei : Yaku
 houtei =
     { name = "河底撈魚"
     , hanType = One
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -271,7 +271,7 @@ chankan : Yaku
 chankan =
     { name = "槍槓"
     , hanType = One
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -287,7 +287,7 @@ rinshanKaihou : Yaku
 rinshanKaihou =
     { name = "嶺上開花"
     , hanType = One
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -307,7 +307,7 @@ doubleReach : Yaku
 doubleReach =
     { name = "ダブル立直"
     , hanType = Two
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -323,7 +323,7 @@ renpuhai : Yaku
 renpuhai =
     { name = "連風牌"
     , hanType = Two
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -341,7 +341,7 @@ toitoi : Yaku
 toitoi =
     { name = "対々和"
     , hanType = Two
-    , condition = \{ hand } -> hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White
     }
 
 
@@ -359,7 +359,7 @@ sananko : Yaku
 sananko =
     { name = "三暗刻"
     , hanType = Two
-    , condition = \{ hand } -> hand == Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White
     }
 
 
@@ -377,7 +377,7 @@ sanshokuDoukou : Yaku
 sanshokuDoukou =
     { name = "三色同刻"
     , hanType = Two
-    , condition = \{ hand } -> hand == Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White
     }
 
 
@@ -393,7 +393,7 @@ sankantsu : Yaku
 sankantsu =
     { name = "三槓子"
     , hanType = Two
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -411,7 +411,7 @@ shousangen : Yaku
 shousangen =
     { name = "小三元"
     , hanType = Two
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 East East East White White White Green Green Green Red Red
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 East East East White White White Green Green Green Red Red
     }
 
 
@@ -429,7 +429,7 @@ honroutou : Yaku
 honroutou =
     { name = "混老頭"
     , hanType = Two
-    , condition = \{ hand } -> hand == Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White
     }
 
 
@@ -447,7 +447,7 @@ sanshokuDoujun : Yaku
 sanshokuDoujun =
     { name = "三色同順"
     , hanType = Two_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White
     }
 
 
@@ -465,7 +465,7 @@ ittsu : Yaku
 ittsu =
     { name = "一気通貫"
     , hanType = Two_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White
     }
 
 
@@ -483,7 +483,7 @@ chanta : Yaku
 chanta =
     { name = "混全帯么九"
     , hanType = Two_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White
     }
 
 
@@ -501,7 +501,7 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
     }
 
 
@@ -523,7 +523,7 @@ ryanpeikou : Yaku
 ryanpeikou =
     { name = "二盃口"
     , hanType = Three
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White)
     }
 
 
@@ -541,7 +541,7 @@ honitsu : Yaku
 honitsu =
     { name = "混一色"
     , hanType = Three_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White
     }
 
 
@@ -559,7 +559,7 @@ junchan : Yaku
 junchan =
     { name = "純全帯么九"
     , hanType = Three_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9
     }
 
 
@@ -582,7 +582,7 @@ chinitsu : Yaku
 chinitsu =
     { name = "清一色"
     , hanType = Six_ConsiderFulouPenalty
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9
     }
 
 
@@ -602,7 +602,7 @@ tenho : Yaku
 tenho =
     { name = "天和"
     , hanType = Yakuman
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -618,7 +618,7 @@ chiho : Yaku
 chiho =
     { name = "地和"
     , hanType = Yakuman
-    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -636,7 +636,7 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
     }
 
 
@@ -654,7 +654,7 @@ suanko : Yaku
 suanko =
     { name = "四暗刻"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White)
     }
 
 
@@ -672,7 +672,7 @@ daisangen : Yaku
 daisangen =
     { name = "大三元"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 East East White White White Green Green Green Red Red Red
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 East East White White White Green Green Green Red Red Red
     }
 
 
@@ -690,7 +690,7 @@ ryuiso : Yaku
 ryuiso =
     { name = "緑一色"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green
+    , situation = \{ hand } -> hand == Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green
     }
 
 
@@ -708,7 +708,7 @@ tsuiso : Yaku
 tsuiso =
     { name = "字一色"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand East East East South South South West West West White White White Red Red
+    , situation = \{ hand } -> hand == Hand East East East South South South West West West White White White Red Red
     }
 
 
@@ -726,7 +726,7 @@ shosushi : Yaku
 shosushi =
     { name = "小四喜"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand M1 M2 M3 East East East South South South West West West North North
+    , situation = \{ hand } -> hand == Hand M1 M2 M3 East East East South South South West West West North North
     }
 
 
@@ -744,7 +744,7 @@ daishushi : Yaku
 daishushi =
     { name = "大四喜"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand M1 M1 East East East South South South West West West North North North
+    , situation = \{ hand } -> hand == Hand M1 M1 East East East South South South West West West North North North
     }
 
 
@@ -762,7 +762,7 @@ chinroto : Yaku
 chinroto =
     { name = "清老頭"
     , hanType = Yakuman
-    , condition = \{ hand } -> hand == Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1
+    , situation = \{ hand } -> hand == Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1
     }
 
 
@@ -778,7 +778,7 @@ sukantsu : Yaku
 sukantsu =
     { name = "四槓子"
     , hanType = Yakuman
-    , condition = always True
+    , situation = always True
     }
 
 
@@ -796,5 +796,5 @@ churenPoto : Yaku
 churenPoto =
     { name = "九蓮宝燈"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
     }

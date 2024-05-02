@@ -98,8 +98,19 @@ type Hand
 
 
 type Situation
-    = WinByTsumo
-    | Menqian
+    = Menqian
+    | WinByTsumo
+    | WinByRon
+    | Reach
+    | Ippatsu
+    | Chankan
+    | RinshanKaihou
+    | Haitei
+    | Tenho
+    | Chiho
+    | Chiitoitsu
+    | KokushiMusou
+    | ChurenPoto
 
 
 check : Yaku -> HandState -> Bool
@@ -131,15 +142,15 @@ menzenTsumo =
 
     import Data.Tile exposing (Tile(..))
 
-    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> False
+    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian, Reach ] } --> True
+    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Reach ] } --> False
 
 -}
 reach : Yaku
 reach =
     { name = "立直"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach ] situations
     }
 
 
@@ -147,15 +158,15 @@ reach =
 
     import Data.Tile exposing (Tile(..))
 
-    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> False
+    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian, Reach, Ippatsu ] } --> True
+    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Reach, Ippatsu ] } --> False
 
 -}
 ippatsu : Yaku
 ippatsu =
     { name = "一発"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach, Ippatsu ] situations
     }
 
 
@@ -231,15 +242,15 @@ ipeko =
 
     import Data.Tile exposing (Tile(..))
 
-    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> True
+    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByTsumo, Haitei ] } --> True
+    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByTsumo ] } --> False
 
 -}
 haitei : Yaku
 haitei =
     { name = "海底摸月"
     , hanType = One
-    , situation = always True
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByTsumo, Haitei ] situations
     }
 
 
@@ -247,15 +258,15 @@ haitei =
 
     import Data.Tile exposing (Tile(..))
 
-    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> True
+    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByRon, Haitei ] } --> True
+    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByRon ] } --> False
 
 -}
 houtei : Yaku
 houtei =
     { name = "河底撈魚"
     , hanType = One
-    , situation = always True
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByRon, Haitei ] situations
     }
 
 
@@ -263,15 +274,15 @@ houtei =
 
     import Data.Tile exposing (Tile(..))
 
-    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> True
+    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByRon, Chankan ] } --> True
+    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByRon ] } --> False
 
 -}
 chankan : Yaku
 chankan =
     { name = "槍槓"
     , hanType = One
-    , situation = always True
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByRon, Chankan ] situations
     }
 
 
@@ -279,15 +290,15 @@ chankan =
 
     import Data.Tile exposing (Tile(..))
 
-    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> True
+    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByTsumo, RinshanKaihou ] } --> True
+    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ WinByTsumo ] } --> False
 
 -}
 rinshanKaihou : Yaku
 rinshanKaihou =
     { name = "嶺上開花"
     , hanType = One
-    , situation = always True
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByTsumo, RinshanKaihou ] situations
     }
 
 
@@ -299,15 +310,15 @@ rinshanKaihou =
 
     import Data.Tile exposing (Tile(..))
 
-    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> False
+    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian, Reach ] } --> True
+    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
 -}
 doubleReach : Yaku
 doubleReach =
     { name = "ダブル立直"
     , hanType = Two
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach ] situations
     }
 
 
@@ -491,8 +502,8 @@ chanta =
 
     import Data.Tile exposing (Tile(..))
 
-    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, situations = [ Menqian ] } --> True
-    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, situations = [] } --> False
+    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, situations = [ Menqian, Chiitoitsu ] } --> True
+    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, situations = [ Chiitoitsu ] } --> False
 
     check chiitoitsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
@@ -501,7 +512,7 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian, Chiitoitsu ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
     }
 
 
@@ -594,15 +605,15 @@ chinitsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> False
+    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian, Tenho ] } --> True
+    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
 -}
 tenho : Yaku
 tenho =
     { name = "天和"
     , hanType = Yakuman
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Tenho ] situations
     }
 
 
@@ -610,15 +621,15 @@ tenho =
 
     import Data.Tile exposing (Tile(..))
 
-    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> True
-    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [] } --> False
+    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian, Chiho ] } --> True
+    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
 -}
 chiho : Yaku
 chiho =
     { name = "地和"
     , hanType = Yakuman
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Chiho ] situations
     }
 
 
@@ -626,8 +637,8 @@ chiho =
 
     import Data.Tile exposing (Tile(..))
 
-    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, situations = [ Menqian ] } --> True
-    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, situations = [] } --> False
+    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, situations = [ Menqian, KokushiMusou ] } --> True
+    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, situations = [ KokushiMusou ] } --> False
 
     check kokushiMusou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
@@ -636,7 +647,7 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian, KokushiMusou ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
     }
 
 
@@ -786,8 +797,8 @@ sukantsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, situations = [ Menqian ] } --> True
-    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, situations = [] } --> False
+    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, situations = [ Menqian, ChurenPoto ] } --> True
+    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, situations = [ ChurenPoto ] } --> False
 
     check churenPoto { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, situations = [ Menqian ] } --> False
 
@@ -796,5 +807,5 @@ churenPoto : Yaku
 churenPoto =
     { name = "九蓮宝燈"
     , hanType = Yakuman
-    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
+    , situation = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian, ChurenPoto ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
     }

@@ -23,6 +23,7 @@ module Data.Yaku exposing
 -}
 
 import Data.Tile exposing (Tile(..))
+import List.Extra
 
 
 type alias Yaku =
@@ -101,11 +102,6 @@ type Situation
     | Menqian
 
 
-filledSituations : List Situation -> List Situation -> Bool
-filledSituations requirements consequences =
-    List.all (\r -> List.member r consequences) requirements
-
-
 check : Yaku -> HandState -> Bool
 check yaku state =
     yaku.condition state
@@ -127,7 +123,7 @@ menzenTsumo : Yaku
 menzenTsumo =
     { name = "門前清自摸和"
     , hanType = One
-    , condition = \{ situations } -> filledSituations [ Menqian, WinByTsumo ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, WinByTsumo ] situations
     }
 
 
@@ -143,7 +139,7 @@ reach : Yaku
 reach =
     { name = "立直"
     , hanType = One
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -159,7 +155,7 @@ ippatsu : Yaku
 ippatsu =
     { name = "一発"
     , hanType = One
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -191,7 +187,7 @@ pinfu : Yaku
 pinfu =
     { name = "平和"
     , hanType = One
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -227,7 +223,7 @@ ipeko : Yaku
 ipeko =
     { name = "一盃口"
     , hanType = One
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White)
     }
 
 
@@ -311,7 +307,7 @@ doubleReach : Yaku
 doubleReach =
     { name = "ダブル立直"
     , hanType = Two
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -505,7 +501,7 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White)
     }
 
 
@@ -527,7 +523,7 @@ ryanpeikou : Yaku
 ryanpeikou =
     { name = "二盃口"
     , hanType = Three
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White)
     }
 
 
@@ -606,7 +602,7 @@ tenho : Yaku
 tenho =
     { name = "天和"
     , hanType = Yakuman
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -622,7 +618,7 @@ chiho : Yaku
 chiho =
     { name = "地和"
     , hanType = Yakuman
-    , condition = \{ situations } -> filledSituations [ Menqian ] situations
+    , condition = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
     }
 
 
@@ -640,7 +636,7 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red)
     }
 
 
@@ -658,7 +654,7 @@ suanko : Yaku
 suanko =
     { name = "四暗刻"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White)
     }
 
 
@@ -800,5 +796,5 @@ churenPoto : Yaku
 churenPoto =
     { name = "九蓮宝燈"
     , hanType = Yakuman
-    , condition = \{ hand, situations } -> filledSituations [ Menqian ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
+    , condition = \{ hand, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (hand == Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2)
     }

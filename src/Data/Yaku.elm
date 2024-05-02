@@ -6,7 +6,7 @@ module Data.Yaku exposing
     , ryanpeikou, honitsu, junchan
     , chinitsu
     , tenho, chiho, kokushiMusou, suanko, daisangen, ryuiso, tsuiso, shosushi, daishushi, chinroto, sukantsu, churenPoto
-    , Hand(..)
+    , Hand(..), WinBy(..)
     )
 
 {-|
@@ -28,7 +28,7 @@ import Data.Tile exposing (Tile(..))
 type alias Yaku =
     { name : String
     , hanType : HanType
-    , condition : { hand : Hand, isMenqian : Bool } -> Bool
+    , condition : HandState -> Bool
     }
 
 
@@ -86,11 +86,23 @@ calcHan { isMenqian } hanType =
             13
 
 
+type alias HandState =
+    { hand : Hand
+    , winBy : WinBy
+    , isMenqian : Bool
+    }
+
+
 type Hand
     = Hand Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile
 
 
-check : Yaku -> { hand : Hand, isMenqian : Bool } -> Bool
+type WinBy
+    = Tsumo
+    | Ron
+
+
+check : Yaku -> HandState -> Bool
 check yaku state =
     yaku.condition state
 
@@ -103,15 +115,15 @@ check yaku state =
 
     import Data.Tile exposing (Tile(..))
 
-    check menzenTsumo { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check menzenTsumo { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check menzenTsumo { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Tsumo } --> True
+    check menzenTsumo { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Tsumo } --> False
 
 -}
 menzenTsumo : Yaku
 menzenTsumo =
     { name = "門前清自摸和"
     , hanType = One
-    , condition = \{ isMenqian } -> isMenqian
+    , condition = \{ isMenqian, winBy } -> (winBy == Tsumo) && isMenqian
     }
 
 
@@ -119,8 +131,8 @@ menzenTsumo =
 
     import Data.Tile exposing (Tile(..))
 
-    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check reach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 reach : Yaku
@@ -135,8 +147,8 @@ reach =
 
     import Data.Tile exposing (Tile(..))
 
-    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check ippatsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 ippatsu : Yaku
@@ -151,8 +163,8 @@ ippatsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check yakuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check yakuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check yakuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check yakuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 yakuhai : Yaku
@@ -167,8 +179,8 @@ yakuhai =
 
     import Data.Tile exposing (Tile(..))
 
-    check pinfu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check pinfu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check pinfu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check pinfu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 pinfu : Yaku
@@ -183,10 +195,10 @@ pinfu =
 
     import Data.Tile exposing (Tile(..))
 
-    check tanyao { hand = Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2, isMenqian = True } --> True
-    check tanyao { hand = Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2, isMenqian = False } --> True
+    check tanyao { hand = Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2, isMenqian = True, winBy = Ron } --> True
+    check tanyao { hand = Hand M2 M3 M4 M6 M7 M8 P2 P3 P4 P6 P7 P8 S2 S2, isMenqian = False, winBy = Ron } --> True
 
-    check tanyao { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check tanyao { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 tanyao : Yaku
@@ -201,10 +213,10 @@ tanyao =
 
     import Data.Tile exposing (Tile(..))
 
-    check ipeko { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check ipeko { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check ipeko { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check ipeko { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
-    check ipeko { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check ipeko { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 ipeko : Yaku
@@ -219,8 +231,8 @@ ipeko =
 
     import Data.Tile exposing (Tile(..))
 
-    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check haitei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 haitei : Yaku
@@ -235,8 +247,8 @@ haitei =
 
     import Data.Tile exposing (Tile(..))
 
-    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check houtei { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 houtei : Yaku
@@ -251,8 +263,8 @@ houtei =
 
     import Data.Tile exposing (Tile(..))
 
-    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check chankan { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 chankan : Yaku
@@ -267,8 +279,8 @@ chankan =
 
     import Data.Tile exposing (Tile(..))
 
-    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check rinshanKaihou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 rinshanKaihou : Yaku
@@ -287,8 +299,8 @@ rinshanKaihou =
 
     import Data.Tile exposing (Tile(..))
 
-    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check doubleReach { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 doubleReach : Yaku
@@ -303,8 +315,8 @@ doubleReach =
 
     import Data.Tile exposing (Tile(..))
 
-    check renpuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check renpuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check renpuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check renpuhai { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 renpuhai : Yaku
@@ -319,10 +331,10 @@ renpuhai =
 
     import Data.Tile exposing (Tile(..))
 
-    check toitoi { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = True } --> True
-    check toitoi { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = False } --> True
+    check toitoi { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check toitoi { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check toitoi { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check toitoi { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 toitoi : Yaku
@@ -337,10 +349,10 @@ toitoi =
 
     import Data.Tile exposing (Tile(..))
 
-    check sananko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check sananko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check sananko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check sananko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check sananko { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check sananko { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 sananko : Yaku
@@ -355,10 +367,10 @@ sananko =
 
     import Data.Tile exposing (Tile(..))
 
-    check sanshokuDoukou { hand = Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White, isMenqian = True } --> True
-    check sanshokuDoukou { hand = Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White, isMenqian = False } --> True
+    check sanshokuDoukou { hand = Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check sanshokuDoukou { hand = Hand M1 M1 M1 P1 P1 P1 S1 S1 S1 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check sanshokuDoukou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check sanshokuDoukou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 sanshokuDoukou : Yaku
@@ -373,8 +385,8 @@ sanshokuDoukou =
 
     import Data.Tile exposing (Tile(..))
 
-    check sankantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check sankantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check sankantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check sankantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 sankantsu : Yaku
@@ -389,10 +401,10 @@ sankantsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check shousangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = True } --> True
-    check shousangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = False } --> True
+    check shousangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = True, winBy = Ron } --> True
+    check shousangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = False, winBy = Ron } --> True
 
-    check shousangen { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check shousangen { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 shousangen : Yaku
@@ -407,10 +419,10 @@ shousangen =
 
     import Data.Tile exposing (Tile(..))
 
-    check honroutou { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = True } --> True
-    check honroutou { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = False } --> True
+    check honroutou { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check honroutou { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check honroutou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check honroutou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 honroutou : Yaku
@@ -425,10 +437,10 @@ honroutou =
 
     import Data.Tile exposing (Tile(..))
 
-    check sanshokuDoujun { hand = Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White, isMenqian = True } --> True
-    check sanshokuDoujun { hand = Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White, isMenqian = False } --> True
+    check sanshokuDoujun { hand = Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check sanshokuDoujun { hand = Hand M1 M2 M3 P1 P2 P3 S1 S2 S3 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check sanshokuDoujun { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check sanshokuDoujun { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 sanshokuDoujun : Yaku
@@ -443,10 +455,10 @@ sanshokuDoujun =
 
     import Data.Tile exposing (Tile(..))
 
-    check ittsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True } --> True
-    check ittsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = False } --> True
+    check ittsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check ittsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check ittsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check ittsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 ittsu : Yaku
@@ -461,10 +473,10 @@ ittsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check chanta { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = True } --> True
-    check chanta { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = False } --> True
+    check chanta { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check chanta { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check chanta { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check chanta { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 chanta : Yaku
@@ -479,10 +491,10 @@ chanta =
 
     import Data.Tile exposing (Tile(..))
 
-    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, isMenqian = True } --> True
-    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, isMenqian = False } --> False
+    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, isMenqian = True, winBy = Ron } --> True
+    check chiitoitsu { hand = Hand M1 M1 M7 M7 P2 P2 P9 P9 S2 S2 East East White White, isMenqian = False, winBy = Ron } --> False
 
-    check chiitoitsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check chiitoitsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 chiitoitsu : Yaku
@@ -501,10 +513,10 @@ chiitoitsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White, isMenqian = True } --> True
-    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White, isMenqian = False } --> False
+    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White, isMenqian = True, winBy = Ron } --> True
+    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 S7 S8 S9 White White, isMenqian = False, winBy = Ron } --> False
 
-    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check ryanpeikou { hand = Hand M1 M2 M3 M1 M2 M3 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 ryanpeikou : Yaku
@@ -519,10 +531,10 @@ ryanpeikou =
 
     import Data.Tile exposing (Tile(..))
 
-    check honitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True } --> True
-    check honitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = False } --> True
+    check honitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check honitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
-    check honitsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check honitsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 honitsu : Yaku
@@ -537,10 +549,10 @@ honitsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check junchan { hand = Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9, isMenqian = True } --> True
-    check junchan { hand = Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9, isMenqian = False } --> True
+    check junchan { hand = Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9, isMenqian = True, winBy = Ron } --> True
+    check junchan { hand = Hand M1 M2 M3 P1 P1 P1 P7 P8 P9 S1 S2 S3 S9 S9, isMenqian = False, winBy = Ron } --> True
 
-    check junchan { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = True } --> False
+    check junchan { hand = Hand M1 M2 M3 P7 P8 P9 S1 S2 S3 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 junchan : Yaku
@@ -560,10 +572,10 @@ junchan =
     import Data.Tile exposing (Tile(..))
 
 
-    check chinitsu { hand = Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9, isMenqian = True } --> True
-    check chinitsu { hand = Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9, isMenqian = False } --> True
+    check chinitsu { hand = Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9, isMenqian = True, winBy = Ron } --> True
+    check chinitsu { hand = Hand M1 M2 M3 M1 M2 M3 (M5 False) M6 M7 (M5 False) M6 M7 M9 M9, isMenqian = False, winBy = Ron } --> True
 
-    check chinitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True } --> False
+    check chinitsu { hand = Hand M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 chinitsu : Yaku
@@ -582,8 +594,8 @@ chinitsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check tenho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 tenho : Yaku
@@ -598,8 +610,8 @@ tenho =
 
     import Data.Tile exposing (Tile(..))
 
-    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> False
+    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check chiho { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> False
 
 -}
 chiho : Yaku
@@ -614,10 +626,10 @@ chiho =
 
     import Data.Tile exposing (Tile(..))
 
-    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, isMenqian = True } --> True
-    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, isMenqian = False } --> False
+    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, isMenqian = True, winBy = Ron } --> True
+    check kokushiMusou { hand = Hand M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red, isMenqian = False, winBy = Ron } --> False
 
-    check kokushiMusou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check kokushiMusou { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 kokushiMusou : Yaku
@@ -632,10 +644,10 @@ kokushiMusou =
 
     import Data.Tile exposing (Tile(..))
 
-    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = True } --> True
-    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = False } --> False
+    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S7 S7 East East East White White, isMenqian = False, winBy = Ron } --> False
 
-    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check suanko { hand = Hand M1 M1 M1 P4 P4 P4 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 suanko : Yaku
@@ -650,10 +662,10 @@ suanko =
 
     import Data.Tile exposing (Tile(..))
 
-    check daisangen { hand = Hand M1 M2 M3 East East White White White Green Green Green Red Red Red, isMenqian = True } --> True
-    check daisangen { hand = Hand M1 M2 M3 East East White White White Green Green Green Red Red Red, isMenqian = False } --> True
+    check daisangen { hand = Hand M1 M2 M3 East East White White White Green Green Green Red Red Red, isMenqian = True, winBy = Ron } --> True
+    check daisangen { hand = Hand M1 M2 M3 East East White White White Green Green Green Red Red Red, isMenqian = False, winBy = Ron } --> True
 
-    check daisangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = True } --> False
+    check daisangen { hand = Hand M1 M2 M3 East East East White White White Green Green Green Red Red, isMenqian = True, winBy = Ron } --> False
 
 -}
 daisangen : Yaku
@@ -668,10 +680,10 @@ daisangen =
 
     import Data.Tile exposing (Tile(..))
 
-    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green, isMenqian = True } --> True
-    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green, isMenqian = False } --> True
+    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green, isMenqian = True, winBy = Ron } --> True
+    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S8 S8 S8 Green Green, isMenqian = False, winBy = Ron } --> True
 
-    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S9 S9 S9 Green Green, isMenqian = False } --> False
+    check ryuiso { hand = Hand S2 S2 S3 S3 S4 S4 S6 S6 S6 S9 S9 S9 Green Green, isMenqian = False, winBy = Ron } --> False
 
 -}
 ryuiso : Yaku
@@ -686,10 +698,10 @@ ryuiso =
 
     import Data.Tile exposing (Tile(..))
 
-    check tsuiso { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = True } --> True
-    check tsuiso { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = False } --> True
+    check tsuiso { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = True, winBy = Ron } --> True
+    check tsuiso { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = False, winBy = Ron } --> True
 
-    check tsuiso { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check tsuiso { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 tsuiso : Yaku
@@ -704,10 +716,10 @@ tsuiso =
 
     import Data.Tile exposing (Tile(..))
 
-    check shosushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = True } --> True
-    check shosushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = False } --> True
+    check shosushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = True, winBy = Ron } --> True
+    check shosushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = False, winBy = Ron } --> True
 
-    check shosushi { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = True } --> False
+    check shosushi { hand = Hand East East East South South South West West West White White White Red Red, isMenqian = True, winBy = Ron } --> False
 
 -}
 shosushi : Yaku
@@ -722,10 +734,10 @@ shosushi =
 
     import Data.Tile exposing (Tile(..))
 
-    check daishushi { hand = Hand M1 M1 East East East South South South West West West North North North, isMenqian = True } --> True
-    check daishushi { hand = Hand M1 M1 East East East South South South West West West North North North, isMenqian = False } --> True
+    check daishushi { hand = Hand M1 M1 East East East South South South West West West North North North, isMenqian = True, winBy = Ron } --> True
+    check daishushi { hand = Hand M1 M1 East East East South South South West West West North North North, isMenqian = False, winBy = Ron } --> True
 
-    check daishushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = True } --> False
+    check daishushi { hand = Hand M1 M2 M3 East East East South South South West West West North North, isMenqian = True, winBy = Ron } --> False
 
 -}
 daishushi : Yaku
@@ -740,10 +752,10 @@ daishushi =
 
     import Data.Tile exposing (Tile(..))
 
-    check chinroto { hand = Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1, isMenqian = True } --> True
-    check chinroto { hand = Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1, isMenqian = False } --> True
+    check chinroto { hand = Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1, isMenqian = True, winBy = Ron } --> True
+    check chinroto { hand = Hand M1 M1 M1 M9 M9 M9 P1 P1 P1 P9 P9 P9 S1 S1, isMenqian = False, winBy = Ron } --> True
 
-    check chinroto { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = True } --> False
+    check chinroto { hand = Hand M1 M1 M1 P9 P9 P9 S1 S1 S1 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 chinroto : Yaku
@@ -758,8 +770,8 @@ chinroto =
 
     import Data.Tile exposing (Tile(..))
 
-    check sukantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> True
-    check sukantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False } --> True
+    check sukantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> True
+    check sukantsu { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = False, winBy = Ron } --> True
 
 -}
 sukantsu : Yaku
@@ -774,10 +786,10 @@ sukantsu =
 
     import Data.Tile exposing (Tile(..))
 
-    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, isMenqian = True } --> True
-    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, isMenqian = False } --> False
+    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, isMenqian = True, winBy = Ron } --> True
+    check churenPoto { hand = Hand M1 M1 M1 M2 M3 M4 (M5 False) M6 M7 M8 M9 M9 M9 M2, isMenqian = False, winBy = Ron } --> False
 
-    check churenPoto { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True } --> False
+    check churenPoto { hand = Hand M1 M2 M3 P4 (P5 False) P6 S7 S8 S9 East East East White White, isMenqian = True, winBy = Ron } --> False
 
 -}
 churenPoto : Yaku

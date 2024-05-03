@@ -30,7 +30,7 @@ import List.Extra exposing (gatherEquals)
 type alias Yaku =
     { name : String
     , hanType : HanType
-    , situation : HandState -> Bool
+    , requirement : HandState -> Bool
     }
 
 
@@ -112,7 +112,7 @@ type Situation
 
 check : Yaku -> HandState -> Bool
 check yaku state =
-    yaku.situation state
+    yaku.requirement state
 
 
 
@@ -132,7 +132,7 @@ menzenTsumo : Yaku
 menzenTsumo =
     { name = "門前清自摸和"
     , hanType = One
-    , situation = \{ situations } -> members [ Menqian, WinByTsumo ] situations
+    , requirement = \{ situations } -> members [ Menqian, WinByTsumo ] situations
     }
 
 
@@ -149,7 +149,7 @@ reach : Yaku
 reach =
     { name = "立直"
     , hanType = One
-    , situation = \{ situations } -> members [ Menqian, Reach ] situations
+    , requirement = \{ situations } -> members [ Menqian, Reach ] situations
     }
 
 
@@ -166,7 +166,7 @@ ippatsu : Yaku
 ippatsu =
     { name = "一発"
     , hanType = One
-    , situation = \{ situations } -> members [ Menqian, Reach, Ippatsu ] situations
+    , requirement = \{ situations } -> members [ Menqian, Reach, Ippatsu ] situations
     }
 
 
@@ -183,7 +183,7 @@ yakuhai : Yaku
 yakuhai =
     { name = "役牌"
     , hanType = One
-    , situation = always True
+    , requirement = always True
     }
 
 
@@ -200,7 +200,7 @@ pinfu : Yaku
 pinfu =
     { name = "平和"
     , hanType = One
-    , situation = \{ situations } -> members [ Menqian ] situations
+    , requirement = \{ situations } -> members [ Menqian ] situations
     }
 
 
@@ -219,7 +219,7 @@ tanyao : Yaku
 tanyao =
     { name = "断么九"
     , hanType = One
-    , situation = \{ groups } -> groups == [ Run M2 M3 M4, Run M6 M7 M8, Run P2 P3 P4, Run P6 P7 P8, Pair S2 S2 ]
+    , requirement = \{ groups } -> groups == [ Run M2 M3 M4, Run M6 M7 M8, Run P2 P3 P4, Run P6 P7 P8, Pair S2 S2 ]
     }
 
 
@@ -238,7 +238,7 @@ ipeko : Yaku
 ipeko =
     { name = "一盃口"
     , hanType = One
-    , situation =
+    , requirement =
         \{ groups, situations } ->
             members [ Menqian ] situations
                 && (List.filter Group.isRun groups
@@ -262,7 +262,7 @@ haitei : Yaku
 haitei =
     { name = "海底摸月"
     , hanType = One
-    , situation = \{ situations } -> members [ WinByTsumo, Haitei ] situations
+    , requirement = \{ situations } -> members [ WinByTsumo, Haitei ] situations
     }
 
 
@@ -279,7 +279,7 @@ houtei : Yaku
 houtei =
     { name = "河底撈魚"
     , hanType = One
-    , situation = \{ situations } -> members [ WinByRon, Haitei ] situations
+    , requirement = \{ situations } -> members [ WinByRon, Haitei ] situations
     }
 
 
@@ -296,7 +296,7 @@ chankan : Yaku
 chankan =
     { name = "槍槓"
     , hanType = One
-    , situation = \{ situations } -> members [ WinByRon, Chankan ] situations
+    , requirement = \{ situations } -> members [ WinByRon, Chankan ] situations
     }
 
 
@@ -313,7 +313,7 @@ rinshanKaihou : Yaku
 rinshanKaihou =
     { name = "嶺上開花"
     , hanType = One
-    , situation = \{ situations } -> members [ WinByTsumo, RinshanKaihou ] situations
+    , requirement = \{ situations } -> members [ WinByTsumo, RinshanKaihou ] situations
     }
 
 
@@ -334,7 +334,7 @@ doubleReach : Yaku
 doubleReach =
     { name = "ダブル立直"
     , hanType = Two
-    , situation = \{ situations } -> members [ Menqian, Reach ] situations
+    , requirement = \{ situations } -> members [ Menqian, Reach ] situations
     }
 
 
@@ -351,7 +351,7 @@ renpuhai : Yaku
 renpuhai =
     { name = "連風牌"
     , hanType = Two
-    , situation = always True
+    , requirement = always True
     }
 
 
@@ -368,7 +368,7 @@ toitoi : Yaku
 toitoi =
     { name = "対々和"
     , hanType = Two
-    , situation =
+    , requirement =
         \{ groups } ->
             List.filter (\g -> Group.isTriplet g || Group.isGang g) groups
                 |> (List.length >> (==) 4)
@@ -388,7 +388,7 @@ sananko : Yaku
 sananko =
     { name = "三暗刻"
     , hanType = Two
-    , situation =
+    , requirement =
         \{ groups } ->
             List.filter Group.isTriplet groups
                 |> (List.length >> (==) 3)
@@ -410,7 +410,7 @@ sanshokuDoukou : Yaku
 sanshokuDoukou =
     { name = "三色同刻"
     , hanType = Two
-    , situation = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P1 P1 P1, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
+    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P1 P1 P1, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
     }
 
 
@@ -427,7 +427,7 @@ sankantsu : Yaku
 sankantsu =
     { name = "三槓子"
     , hanType = Two
-    , situation =
+    , requirement =
         \{ groups } ->
             List.filter Group.isGang groups
                 |> (List.length >> (==) 3)
@@ -449,7 +449,7 @@ shousangen : Yaku
 shousangen =
     { name = "小三元"
     , hanType = Two
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet White White White, Triplet Green Green Green, Pair Red Red ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet White White White, Triplet Green Green Green, Pair Red Red ]
     }
 
 
@@ -468,7 +468,7 @@ honroutou : Yaku
 honroutou =
     { name = "混老頭"
     , hanType = Two
-    , situation = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P9 P9 P9, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
+    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P9 P9 P9, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
     }
 
 
@@ -487,7 +487,7 @@ sanshokuDoujun : Yaku
 sanshokuDoujun =
     { name = "三色同順"
     , hanType = Two_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Run P1 P2 P3, Run S1 S2 S3, Triplet East East East, Pair White White ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run P1 P2 P3, Run S1 S2 S3, Triplet East East East, Pair White White ]
     }
 
 
@@ -504,7 +504,7 @@ ittsu : Yaku
 ittsu =
     { name = "一気通貫"
     , hanType = Two_ConsiderFulouPenalty
-    , situation =
+    , requirement =
         \{ groups } ->
             members [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9 ] groups
                 || members [ Run P1 P2 P3, Run P4 (P5 False) P6, Run P7 P8 P9 ] groups
@@ -525,7 +525,7 @@ chanta : Yaku
 chanta =
     { name = "混全帯么九"
     , hanType = Two_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ]
     }
 
 
@@ -544,7 +544,7 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , situation =
+    , requirement =
         \{ groups, situations } ->
             members [ Menqian, Chiitoitsu ] situations
                 && (List.filter Group.isPair groups |> (List.length >> (==) 7))
@@ -570,7 +570,7 @@ ryanpeikou : Yaku
 ryanpeikou =
     { name = "二盃口"
     , hanType = Three
-    , situation =
+    , requirement =
         \{ groups, situations } ->
             members [ Menqian ] situations
                 && (List.filter Group.isRun groups
@@ -594,7 +594,7 @@ honitsu : Yaku
 honitsu =
     { name = "混一色"
     , hanType = Three_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ]
     }
 
 
@@ -612,7 +612,7 @@ junchan : Yaku
 junchan =
     { name = "純全帯么九"
     , hanType = Three_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Triplet P1 P1 P1, Run P7 P8 P9, Run S1 S2 S3, Pair S9 S9 ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet P1 P1 P1, Run P7 P8 P9, Run S1 S2 S3, Pair S9 S9 ]
     }
 
 
@@ -635,7 +635,7 @@ chinitsu : Yaku
 chinitsu =
     { name = "清一色"
     , hanType = Six_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Run M1 M2 M3, Run (M5 False) M6 M7, Run (M5 False) M6 M7, Pair M9 M9 ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run M1 M2 M3, Run (M5 False) M6 M7, Run (M5 False) M6 M7, Pair M9 M9 ]
     }
 
 
@@ -656,7 +656,7 @@ tenho : Yaku
 tenho =
     { name = "天和"
     , hanType = Yakuman
-    , situation = \{ situations } -> members [ Menqian, Tenho ] situations
+    , requirement = \{ situations } -> members [ Menqian, Tenho ] situations
     }
 
 
@@ -673,7 +673,7 @@ chiho : Yaku
 chiho =
     { name = "地和"
     , hanType = Yakuman
-    , situation = \{ situations } -> members [ Menqian, Chiho ] situations
+    , requirement = \{ situations } -> members [ Menqian, Chiho ] situations
     }
 
 
@@ -692,7 +692,7 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , situation =
+    , requirement =
         \{ groups, situations } ->
             members [ Menqian, KokushiMusou ] situations
                 && (List.filter Group.isKokushi groups |> (List.length >> (==) 1))
@@ -714,7 +714,7 @@ suanko : Yaku
 suanko =
     { name = "四暗刻"
     , hanType = Yakuman
-    , situation =
+    , requirement =
         \{ groups, situations } ->
             members [ Menqian ] situations
                 && (List.filter Group.isTriplet groups |> List.length >> (==) 4)
@@ -734,7 +734,7 @@ daisangen : Yaku
 daisangen =
     { name = "大三元"
     , hanType = Yakuman
-    , situation =
+    , requirement =
         \{ groups } ->
             members
                 [ Triplet White White White
@@ -758,7 +758,7 @@ ryuiso : Yaku
 ryuiso =
     { name = "緑一色"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S8 S8 S8, Pair Green Green ]
+    , requirement = \{ groups } -> groups == [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S8 S8 S8, Pair Green Green ]
     }
 
 
@@ -775,7 +775,7 @@ tsuiso : Yaku
 tsuiso =
     { name = "字一色"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ]
+    , requirement = \{ groups } -> groups == [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ]
     }
 
 
@@ -792,7 +792,7 @@ shosushi : Yaku
 shosushi =
     { name = "小四喜"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ]
+    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ]
     }
 
 
@@ -809,7 +809,7 @@ daishushi : Yaku
 daishushi =
     { name = "大四喜"
     , hanType = Yakuman
-    , situation =
+    , requirement =
         \{ groups } ->
             members
                 [ Triplet East East East
@@ -834,7 +834,7 @@ chinroto : Yaku
 chinroto =
     { name = "清老頭"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet M9 M9 M9, Triplet P1 P1 P1, Triplet P9 P9 P9, Pair S1 S1 ]
+    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet M9 M9 M9, Triplet P1 P1 P1, Triplet P9 P9 P9, Pair S1 S1 ]
     }
 
 
@@ -851,7 +851,7 @@ sukantsu : Yaku
 sukantsu =
     { name = "四槓子"
     , hanType = Yakuman
-    , situation =
+    , requirement =
         \{ groups } ->
             List.filter Group.isGang groups
                 |> (List.length >> (==) 4)
@@ -873,7 +873,7 @@ churenPoto : Yaku
 churenPoto =
     { name = "九蓮宝燈"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> members [ Menqian, ChurenPoto ] situations && (groups == [ Triplet M1 M1 M1, Pair M2 M2, Run M3 M4 (M5 False), Run M6 M7 M8, Triplet M9 M9 M9 ])
+    , requirement = \{ groups, situations } -> members [ Menqian, ChurenPoto ] situations && (groups == [ Triplet M1 M1 M1, Pair M2 M2, Run M3 M4 (M5 False), Run M6 M7 M8, Triplet M9 M9 M9 ])
     }
 
 

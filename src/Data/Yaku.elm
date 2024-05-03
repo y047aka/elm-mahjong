@@ -24,7 +24,6 @@ module Data.Yaku exposing
 
 import Data.Group exposing (Group(..))
 import Data.Tile exposing (Tile(..))
-import List.Extra
 
 
 type alias Yaku =
@@ -132,7 +131,7 @@ menzenTsumo : Yaku
 menzenTsumo =
     { name = "門前清自摸和"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, WinByTsumo ] situations
+    , situation = \{ situations } -> members [ Menqian, WinByTsumo ] situations
     }
 
 
@@ -149,7 +148,7 @@ reach : Yaku
 reach =
     { name = "立直"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach ] situations
+    , situation = \{ situations } -> members [ Menqian, Reach ] situations
     }
 
 
@@ -166,7 +165,7 @@ ippatsu : Yaku
 ippatsu =
     { name = "一発"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach, Ippatsu ] situations
+    , situation = \{ situations } -> members [ Menqian, Reach, Ippatsu ] situations
     }
 
 
@@ -200,7 +199,7 @@ pinfu : Yaku
 pinfu =
     { name = "平和"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations
+    , situation = \{ situations } -> members [ Menqian ] situations
     }
 
 
@@ -238,7 +237,7 @@ ipeko : Yaku
 ipeko =
     { name = "一盃口"
     , hanType = One
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Triplet East East East, Pair White White ])
+    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Triplet East East East, Pair White White ])
     }
 
 
@@ -255,7 +254,7 @@ haitei : Yaku
 haitei =
     { name = "海底摸月"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByTsumo, Haitei ] situations
+    , situation = \{ situations } -> members [ WinByTsumo, Haitei ] situations
     }
 
 
@@ -272,7 +271,7 @@ houtei : Yaku
 houtei =
     { name = "河底撈魚"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByRon, Haitei ] situations
+    , situation = \{ situations } -> members [ WinByRon, Haitei ] situations
     }
 
 
@@ -289,7 +288,7 @@ chankan : Yaku
 chankan =
     { name = "槍槓"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByRon, Chankan ] situations
+    , situation = \{ situations } -> members [ WinByRon, Chankan ] situations
     }
 
 
@@ -306,7 +305,7 @@ rinshanKaihou : Yaku
 rinshanKaihou =
     { name = "嶺上開花"
     , hanType = One
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ WinByTsumo, RinshanKaihou ] situations
+    , situation = \{ situations } -> members [ WinByTsumo, RinshanKaihou ] situations
     }
 
 
@@ -327,7 +326,7 @@ doubleReach : Yaku
 doubleReach =
     { name = "ダブル立直"
     , hanType = Two
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Reach ] situations
+    , situation = \{ situations } -> members [ Menqian, Reach ] situations
     }
 
 
@@ -532,7 +531,7 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian, Chiitoitsu ] situations && (groups == [ Pair M1 M1, Pair M7 M7, Pair P2 P2, Pair P9 P9, Pair S2 S2, Pair East East, Pair White White ])
+    , situation = \{ groups, situations } -> members [ Menqian, Chiitoitsu ] situations && (groups == [ Pair M1 M1, Pair M7 M7, Pair P2 P2, Pair P9 P9, Pair S2 S2, Pair East East, Pair White White ])
     }
 
 
@@ -555,7 +554,7 @@ ryanpeikou : Yaku
 ryanpeikou =
     { name = "二盃口"
     , hanType = Three
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Run S7 S8 S9, Pair White White ])
+    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Run S7 S8 S9, Pair White White ])
     }
 
 
@@ -638,7 +637,7 @@ tenho : Yaku
 tenho =
     { name = "天和"
     , hanType = Yakuman
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Tenho ] situations
+    , situation = \{ situations } -> members [ Menqian, Tenho ] situations
     }
 
 
@@ -655,7 +654,7 @@ chiho : Yaku
 chiho =
     { name = "地和"
     , hanType = Yakuman
-    , situation = \{ situations } -> List.Extra.isSubsequenceOf [ Menqian, Chiho ] situations
+    , situation = \{ situations } -> members [ Menqian, Chiho ] situations
     }
 
 
@@ -674,7 +673,7 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian, KokushiMusou ] situations && (groups == [ Kokushi M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red ])
+    , situation = \{ groups, situations } -> members [ Menqian, KokushiMusou ] situations && (groups == [ Kokushi M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red ])
     }
 
 
@@ -693,7 +692,7 @@ suanko : Yaku
 suanko =
     { name = "四暗刻"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian ] situations && (groups == [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ])
+    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ])
     }
 
 
@@ -843,5 +842,14 @@ churenPoto : Yaku
 churenPoto =
     { name = "九蓮宝燈"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> List.Extra.isSubsequenceOf [ Menqian, ChurenPoto ] situations && (groups == [ Triplet M1 M1 M1, Pair M2 M2, Run M3 M4 (M5 False), Run M6 M7 M8, Triplet M9 M9 M9 ])
+    , situation = \{ groups, situations } -> members [ Menqian, ChurenPoto ] situations && (groups == [ Triplet M1 M1 M1, Pair M2 M2, Run M3 M4 (M5 False), Run M6 M7 M8, Triplet M9 M9 M9 ])
     }
+
+
+
+-- HELPERS
+
+
+members : List a -> List a -> Bool
+members xs ys =
+    List.all (\x -> List.member x ys) xs

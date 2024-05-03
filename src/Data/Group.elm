@@ -14,6 +14,7 @@ type Group
     | Pair Tile Tile
     | PartialPenchan Tile Tile
     | PartialKanchan Tile Tile
+    | Kokushi Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile
 
 
 type alias GroupsPerSuit =
@@ -385,6 +386,9 @@ isPartial group =
 
         PartialKanchan _ _ ->
             True
+
+        Kokushi _ _ _ _ _ _ _ _ _ _ _ _ _ _ ->
+            False
 
 
 {-|

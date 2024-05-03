@@ -1,4 +1,17 @@
-module Data.Group exposing (FindPartialsOption(..), Group(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit, keepHighestScore)
+module Data.Group exposing
+    ( Group(..)
+    , isTriplet, isRun, isGang, isPair, isKokushi
+    , toTiles
+    , FindPartialsOption(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit, keepHighestScore
+    )
+
+{-|
+
+@docs Group
+@docs isTriplet, isRun, isGang, isPair, isKokushi
+@docs toTiles
+
+-}
 
 import Array
 import Data.Category exposing (Category(..))
@@ -15,6 +28,81 @@ type Group
     | PartialPenchan Tile Tile
     | PartialKanchan Tile Tile
     | Kokushi Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile Tile
+
+
+isTriplet : Group -> Bool
+isTriplet group =
+    case group of
+        Triplet _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isRun : Group -> Bool
+isRun group =
+    case group of
+        Run _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isGang : Group -> Bool
+isGang group =
+    case group of
+        Gang _ _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isPair : Group -> Bool
+isPair group =
+    case group of
+        Pair _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isKokushi : Group -> Bool
+isKokushi group =
+    case group of
+        Kokushi _ _ _ _ _ _ _ _ _ _ _ _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+toTiles : Group -> List Tile
+toTiles group =
+    case group of
+        Triplet t1 t2 t3 ->
+            [ t1, t2, t3 ]
+
+        Run t1 t2 t3 ->
+            [ t1, t2, t3 ]
+
+        Pair t1 t2 ->
+            [ t1, t2 ]
+
+        Gang t1 t2 t3 t4 ->
+            [ t1, t2, t3, t4 ]
+
+        PartialPenchan t1 t2 ->
+            [ t1, t2 ]
+
+        PartialKanchan t1 t2 ->
+            [ t1, t2 ]
+
+        Kokushi t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 ->
+            [ t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14 ]
 
 
 type alias GroupsPerSuit =
@@ -346,16 +434,6 @@ map2RetainJust func a b =
 addGroupToHead : Group -> List (List Group) -> List (List Group)
 addGroupToHead group foundGroups =
     List.map ((::) group) foundGroups
-
-
-isPair : Group -> Bool
-isPair group =
-    case group of
-        Pair _ _ ->
-            True
-
-        _ ->
-            False
 
 
 breakdownCartesianProduct : GroupsBreakdown -> List (List Group)

@@ -22,8 +22,9 @@ module Data.Yaku exposing
 
 -}
 
-import Data.Group exposing (Group(..))
+import Data.Group as Group exposing (Group(..))
 import Data.Tile exposing (Tile(..))
+import List.Extra exposing (gatherEquals)
 
 
 type alias Yaku =
@@ -237,7 +238,14 @@ ipeko : Yaku
 ipeko =
     { name = "一盃口"
     , hanType = One
-    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Triplet East East East, Pair White White ])
+    , situation =
+        \{ groups, situations } ->
+            members [ Menqian ] situations
+                && (List.filter Group.isRun groups
+                        |> gatherEquals
+                        |> List.filter (\( head, tails ) -> List.length (head :: tails) >= 2)
+                        |> (List.length >> (==) 1)
+                   )
     }
 
 
@@ -352,17 +360,18 @@ renpuhai =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check toitoi { groups = [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
     check toitoi { groups = [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ], situations = [] } --> True
-
-    check toitoi { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check toitoi { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 toitoi : Yaku
 toitoi =
     { name = "対々和"
     , hanType = Two
-    , situation = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ]
+    , situation =
+        \{ groups } ->
+            List.filter (\g -> Group.isTriplet g || Group.isGang g) groups
+                |> (List.length >> (==) 4)
     }
 
 
@@ -371,17 +380,18 @@ toitoi =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check sananko { groups = [ Triplet M1 M1 M1, Triplet P4 P4 P4, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
     check sananko { groups = [ Triplet M1 M1 M1, Triplet P4 P4 P4, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> True
-
-    check sananko { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check sananko { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 sananko : Yaku
 sananko =
     { name = "三暗刻"
     , hanType = Two
-    , situation = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P4 P4 P4, Run S7 S8 S9, Triplet East East East, Pair White White ]
+    , situation =
+        \{ groups } ->
+            List.filter Group.isTriplet groups
+                |> (List.length >> (==) 3)
     }
 
 
@@ -409,15 +419,18 @@ sanshokuDoukou =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check sankantsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
-    check sankantsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> True
+    check sankantsu { groups = [ Gang M1 M1 M1 M1, Gang P4 P4 P4 P4, Run S7 S8 S9, Gang East East East East, Pair White White ], situations = [] } --> True
+    check sankantsu { groups = [ Gang M1 M1 M1 M1, Gang P4 P4 P4 P4, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 sankantsu : Yaku
 sankantsu =
     { name = "三槓子"
     , hanType = Two
-    , situation = always True
+    , situation =
+        \{ groups } ->
+            List.filter Group.isGang groups
+                |> (List.length >> (==) 3)
     }
 
 
@@ -483,17 +496,19 @@ sanshokuDoujun =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check ittsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
     check ittsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [] } --> True
-
-    check ittsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check ittsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 ittsu : Yaku
 ittsu =
     { name = "一気通貫"
     , hanType = Two_ConsiderFulouPenalty
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ]
+    , situation =
+        \{ groups } ->
+            members [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9 ] groups
+                || members [ Run P1 P2 P3, Run P4 (P5 False) P6, Run P7 P8 P9 ] groups
+                || members [ Run S1 S2 S3, Run S4 (S5 False) S6, Run S7 S8 S9 ] groups
     }
 
 
@@ -502,10 +517,8 @@ ittsu =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check chanta { groups = [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
     check chanta { groups = [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ], situations = [] } --> True
-
-    check chanta { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check chanta { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 chanta : Yaku
@@ -531,7 +544,10 @@ chiitoitsu : Yaku
 chiitoitsu =
     { name = "七対子"
     , hanType = Two
-    , situation = \{ groups, situations } -> members [ Menqian, Chiitoitsu ] situations && (groups == [ Pair M1 M1, Pair M7 M7, Pair P2 P2, Pair P9 P9, Pair S2 S2, Pair East East, Pair White White ])
+    , situation =
+        \{ groups, situations } ->
+            members [ Menqian, Chiitoitsu ] situations
+                && (List.filter Group.isPair groups |> (List.length >> (==) 7))
     }
 
 
@@ -554,7 +570,14 @@ ryanpeikou : Yaku
 ryanpeikou =
     { name = "二盃口"
     , hanType = Three
-    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Run M1 M2 M3, Run M1 M2 M3, Run S7 S8 S9, Run S7 S8 S9, Pair White White ])
+    , situation =
+        \{ groups, situations } ->
+            members [ Menqian ] situations
+                && (List.filter Group.isRun groups
+                        |> gatherEquals
+                        |> List.filter (\( head, tails ) -> List.length (head :: tails) >= 2)
+                        |> (List.length >> (==) 2)
+                   )
     }
 
 
@@ -563,10 +586,8 @@ ryanpeikou =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check honitsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
     check honitsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [] } --> True
-
-    check honitsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check honitsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 honitsu : Yaku
@@ -582,7 +603,6 @@ honitsu =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check junchan { groups = [ Run M1 M2 M3, Triplet P1 P1 P1, Run P7 P8 P9, Run S1 S2 S3, Pair S9 S9 ], situations = [ Menqian ] } --> True
     check junchan { groups = [ Run M1 M2 M3, Triplet P1 P1 P1, Run P7 P8 P9, Run S1 S2 S3, Pair S9 S9 ], situations = [] } --> True
 
     check junchan { groups = [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
@@ -606,10 +626,9 @@ junchan =
     import Data.Group exposing (Group(..))
 
 
-    check chinitsu { groups = [ Run M1 M2 M3, Run M1 M2 M3, Run (M5 False) M6 M7, Run (M5 False) M6 M7, Pair M9 M9 ], situations = [ Menqian ] } --> True
     check chinitsu { groups = [ Run M1 M2 M3, Run M1 M2 M3, Run (M5 False) M6 M7, Run (M5 False) M6 M7, Pair M9 M9 ], situations = [] } --> True
 
-    check chinitsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check chinitsu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 chinitsu : Yaku
@@ -673,7 +692,10 @@ kokushiMusou : Yaku
 kokushiMusou =
     { name = "国士無双"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> members [ Menqian, KokushiMusou ] situations && (groups == [ Kokushi M1 M1 M9 P1 P9 S1 S9 East South West North White Green Red ])
+    , situation =
+        \{ groups, situations } ->
+            members [ Menqian, KokushiMusou ] situations
+                && (List.filter Group.isKokushi groups |> (List.length >> (==) 1))
     }
 
 
@@ -692,7 +714,10 @@ suanko : Yaku
 suanko =
     { name = "四暗刻"
     , hanType = Yakuman
-    , situation = \{ groups, situations } -> members [ Menqian ] situations && (groups == [ Triplet M1 M1 M1, Triplet P4 P4 P4, Triplet S7 S7 S7, Triplet East East East, Pair White White ])
+    , situation =
+        \{ groups, situations } ->
+            members [ Menqian ] situations
+                && (List.filter Group.isTriplet groups |> List.length >> (==) 4)
     }
 
 
@@ -701,17 +726,22 @@ suanko =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check daisangen { groups = [ Run M1 M2 M3, Pair East East, Triplet White White White, Triplet Green Green Green, Triplet Red Red Red ], situations = [ Menqian ] } --> True
     check daisangen { groups = [ Run M1 M2 M3, Pair East East, Triplet White White White, Triplet Green Green Green, Triplet Red Red Red ], situations = [] } --> True
-
-    check daisangen { groups = [ Run M1 M2 M3, Triplet East East East, Triplet White White White, Triplet Green Green Green, Pair Red Red ], situations = [ Menqian ] } --> False
+    check daisangen { groups = [ Run M1 M2 M3, Triplet East East East, Triplet White White White, Triplet Green Green Green, Pair Red Red ], situations = [] } --> False
 
 -}
 daisangen : Yaku
 daisangen =
     { name = "大三元"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Run M1 M2 M3, Pair East East, Triplet White White White, Triplet Green Green Green, Triplet Red Red Red ]
+    , situation =
+        \{ groups } ->
+            members
+                [ Triplet White White White
+                , Triplet Green Green Green
+                , Triplet Red Red Red
+                ]
+                groups
     }
 
 
@@ -720,9 +750,7 @@ daisangen =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check ryuiso { groups = [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S8 S8 S8, Pair Green Green ], situations = [ Menqian ] } --> True
     check ryuiso { groups = [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S8 S8 S8, Pair Green Green ], situations = [] } --> True
-
     check ryuiso { groups = [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S9 S9 S9, Pair Green Green ], situations = [] } --> False
 
 -}
@@ -739,10 +767,8 @@ ryuiso =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check tsuiso { groups = [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ], situations = [ Menqian ] } --> True
     check tsuiso { groups = [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ], situations = [] } --> True
-
-    check tsuiso { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check tsuiso { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 tsuiso : Yaku
@@ -758,10 +784,8 @@ tsuiso =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check shosushi { groups = [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ], situations = [ Menqian ] } --> True
     check shosushi { groups = [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ], situations = [] } --> True
-
-    check shosushi { groups = [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ], situations = [ Menqian ] } --> False
+    check shosushi { groups = [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ], situations = [] } --> False
 
 -}
 shosushi : Yaku
@@ -777,17 +801,23 @@ shosushi =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check daishushi { groups = [ Pair M1 M1, Triplet East East East, Triplet South South South, Triplet West West West, Triplet North North North ], situations = [ Menqian ] } --> True
     check daishushi { groups = [ Pair M1 M1, Triplet East East East, Triplet South South South, Triplet West West West, Triplet North North North ], situations = [] } --> True
-
-    check daishushi { groups = [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ], situations = [ Menqian ] } --> False
+    check daishushi { groups = [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ], situations = [] } --> False
 
 -}
 daishushi : Yaku
 daishushi =
     { name = "大四喜"
     , hanType = Yakuman
-    , situation = \{ groups } -> groups == [ Pair M1 M1, Triplet East East East, Triplet South South South, Triplet West West West, Triplet North North North ]
+    , situation =
+        \{ groups } ->
+            members
+                [ Triplet East East East
+                , Triplet South South South
+                , Triplet West West West
+                , Triplet North North North
+                ]
+                groups
     }
 
 
@@ -796,10 +826,8 @@ daishushi =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check chinroto { groups = [ Triplet M1 M1 M1, Triplet M9 M9 M9, Triplet P1 P1 P1, Triplet P9 P9 P9, Pair S1 S1 ], situations = [ Menqian ] } --> True
     check chinroto { groups = [ Triplet M1 M1 M1, Triplet M9 M9 M9, Triplet P1 P1 P1, Triplet P9 P9 P9, Pair S1 S1 ], situations = [] } --> True
-
-    check chinroto { groups = [ Triplet M1 M1 M1, Triplet P9 P9 P9, Triplet S1 S1 S1, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> False
+    check chinroto { groups = [ Triplet M1 M1 M1, Triplet P9 P9 P9, Triplet S1 S1 S1, Triplet East East East, Pair White White ], situations = [] } --> False
 
 -}
 chinroto : Yaku
@@ -815,15 +843,18 @@ chinroto =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check sukantsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
-    check sukantsu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> True
+    check sukantsu { groups = [ Gang M1 M1 M1 M1, Gang P4 P4 P4 P4, Gang S7 S7 S7 S7, Gang East East East East, Pair White White ], situations = [] } --> True
+    check sukantsu { groups = [ Gang M1 M1 M1 M1, Gang P4 P4 P4 P4, Run S7 S8 S9, Gang East East East East, Pair White White ], situations = [] } --> False
 
 -}
 sukantsu : Yaku
 sukantsu =
     { name = "四槓子"
     , hanType = Yakuman
-    , situation = always True
+    , situation =
+        \{ groups } ->
+            List.filter Group.isGang groups
+                |> (List.length >> (==) 4)
     }
 
 

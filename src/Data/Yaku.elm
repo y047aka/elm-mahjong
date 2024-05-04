@@ -23,7 +23,7 @@ module Data.Yaku exposing
 -}
 
 import Data.Group as Group exposing (Group(..))
-import Data.Tile exposing (Tile(..))
+import Data.Tile as Tile exposing (Tile(..))
 import List.Extra exposing (gatherEquals)
 
 
@@ -219,7 +219,10 @@ tanyao : Yaku
 tanyao =
     { name = "断么九"
     , hanType = One
-    , requirement = \{ groups } -> groups == [ Run M2 M3 M4, Run M6 M7 M8, Run P2 P3 P4, Run P6 P7 P8, Pair S2 S2 ]
+    , requirement =
+        \{ groups } ->
+            List.concatMap Group.toTiles groups
+                |> List.all (\t -> not (Tile.isYaojiu t))
     }
 
 
@@ -410,7 +413,17 @@ sanshokuDoukou : Yaku
 sanshokuDoukou =
     { name = "三色同刻"
     , hanType = Two
-    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P1 P1 P1, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
+    , requirement =
+        \{ groups } ->
+            members [ Triplet M1 M1 M1, Triplet P1 P1 P1, Triplet S1 S1 S1 ] groups
+                || members [ Triplet M2 M2 M2, Triplet P2 P2 P2, Triplet S2 S2 S2 ] groups
+                || members [ Triplet M3 M3 M3, Triplet P3 P3 P3, Triplet S3 S3 S3 ] groups
+                || members [ Triplet M4 M4 M4, Triplet P4 P4 P4, Triplet S4 S4 S4 ] groups
+                || members [ Triplet (M5 False) (M5 False) (M5 False), Triplet (P5 False) (P5 False) (P5 False), Triplet (S5 False) (S5 False) (S5 False) ] groups
+                || members [ Triplet M6 M6 M6, Triplet P6 P6 P6, Triplet S6 S6 S6 ] groups
+                || members [ Triplet M7 M7 M7, Triplet P7 P7 P7, Triplet S7 S7 S7 ] groups
+                || members [ Triplet M8 M8 M8, Triplet P8 P8 P8, Triplet S8 S8 S8 ] groups
+                || members [ Triplet M9 M9 M9, Triplet P9 P9 P9, Triplet S9 S9 S9 ] groups
     }
 
 
@@ -449,7 +462,22 @@ shousangen : Yaku
 shousangen =
     { name = "小三元"
     , hanType = Two
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet White White White, Triplet Green Green Green, Pair Red Red ]
+    , requirement =
+        \{ groups } ->
+            let
+                isDragonTriplet group =
+                    List.member group [ Triplet White White White, Triplet Green Green Green, Triplet Red Red Red ]
+
+                isDragonPair group =
+                    List.member group [ Pair White White, Pair Green Green, Pair Red Red ]
+
+                twoDragonTriplets =
+                    List.filter isDragonTriplet groups |> (List.length >> (==) 2)
+
+                oneDragonPair =
+                    List.filter isDragonPair groups |> (List.length >> (==) 1)
+            in
+            twoDragonTriplets && oneDragonPair
     }
 
 
@@ -468,7 +496,13 @@ honroutou : Yaku
 honroutou =
     { name = "混老頭"
     , hanType = Two
-    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet P9 P9 P9, Triplet S1 S1 S1, Triplet East East East, Pair White White ]
+    , requirement =
+        \{ groups } ->
+            let
+                allYaojiu =
+                    List.concatMap Group.toTiles groups |> List.all Tile.isYaojiu
+            in
+            fourTriplets groups && allYaojiu
     }
 
 
@@ -487,7 +521,15 @@ sanshokuDoujun : Yaku
 sanshokuDoujun =
     { name = "三色同順"
     , hanType = Two_ConsiderFulouPenalty
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run P1 P2 P3, Run S1 S2 S3, Triplet East East East, Pair White White ]
+    , requirement =
+        \{ groups } ->
+            members [ Run M1 M2 M3, Run P1 P2 P3, Run S1 S2 S3 ] groups
+                || members [ Run M2 M3 M4, Run P2 P3 P4, Run S2 S3 S4 ] groups
+                || members [ Run M3 M4 (M5 False), Run P3 P4 (P5 False), Run S3 S4 (S5 False) ] groups
+                || members [ Run M4 (M5 False) M6, Run P4 (P5 False) P6, Run S4 (S5 False) S6 ] groups
+                || members [ Run (M5 False) M6 M7, Run (P5 False) P6 P7, Run (S5 False) S6 S7 ] groups
+                || members [ Run M6 M7 M8, Run P6 P7 P8, Run S6 S7 S8 ] groups
+                || members [ Run M7 M8 M9, Run P7 P8 P9, Run S7 S8 S9 ] groups
     }
 
 
@@ -594,7 +636,22 @@ honitsu : Yaku
 honitsu =
     { name = "混一色"
     , hanType = Three_ConsiderFulouPenalty
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run M4 (M5 False) M6, Run M7 M8 M9, Triplet East East East, Pair White White ]
+    , requirement =
+        \{ groups } ->
+            let
+                tiles =
+                    List.concatMap Group.toTiles groups
+
+                allManOrHonor =
+                    List.all (\t -> Tile.isMan t || Tile.isHonor t) tiles
+
+                allPinOrHonor =
+                    List.all (\t -> Tile.isPin t || Tile.isHonor t) tiles
+
+                allSouOrHonor =
+                    List.all (\t -> Tile.isSou t || Tile.isHonor t) tiles
+            in
+            allManOrHonor || allPinOrHonor || allSouOrHonor
     }
 
 
@@ -635,7 +692,22 @@ chinitsu : Yaku
 chinitsu =
     { name = "清一色"
     , hanType = Six_ConsiderFulouPenalty
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run M1 M2 M3, Run (M5 False) M6 M7, Run (M5 False) M6 M7, Pair M9 M9 ]
+    , requirement =
+        \{ groups } ->
+            let
+                tiles =
+                    List.concatMap Group.toTiles groups
+
+                allMan =
+                    List.all Tile.isMan tiles
+
+                allPin =
+                    List.all Tile.isPin tiles
+
+                allSou =
+                    List.all Tile.isSou tiles
+            in
+            allMan || allPin || allSou
     }
 
 
@@ -717,7 +789,7 @@ suanko =
     , requirement =
         \{ groups, situations } ->
             members [ Menqian ] situations
-                && (List.filter Group.isTriplet groups |> List.length >> (==) 4)
+                && fourTriplets groups
     }
 
 
@@ -758,7 +830,10 @@ ryuiso : Yaku
 ryuiso =
     { name = "緑一色"
     , hanType = Yakuman
-    , requirement = \{ groups } -> groups == [ Run S2 S3 S4, Run S2 S3 S4, Triplet S6 S6 S6, Triplet S8 S8 S8, Pair Green Green ]
+    , requirement =
+        \{ groups } ->
+            List.concatMap Group.toTiles groups
+                |> List.all (\t -> List.member t [ S2, S3, S4, S6, S8, Green ])
     }
 
 
@@ -775,7 +850,10 @@ tsuiso : Yaku
 tsuiso =
     { name = "字一色"
     , hanType = Yakuman
-    , requirement = \{ groups } -> groups == [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet White White White, Pair Red Red ]
+    , requirement =
+        \{ groups } ->
+            List.concatMap Group.toTiles groups
+                |> List.all Tile.isHonor
     }
 
 
@@ -792,7 +870,22 @@ shosushi : Yaku
 shosushi =
     { name = "小四喜"
     , hanType = Yakuman
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet East East East, Triplet South South South, Triplet West West West, Pair North North ]
+    , requirement =
+        \{ groups } ->
+            let
+                isWindTriplet group =
+                    List.member group [ Triplet East East East, Triplet South South South, Triplet West West West, Triplet North North North ]
+
+                isWindPair group =
+                    List.member group [ Pair East East, Pair South South, Pair West West, Pair North North ]
+
+                threeWindTriplets =
+                    List.filter isWindTriplet groups |> (List.length >> (==) 3)
+
+                oneWindPair =
+                    List.filter isWindPair groups |> (List.length >> (==) 1)
+            in
+            threeWindTriplets && oneWindPair
     }
 
 
@@ -834,7 +927,13 @@ chinroto : Yaku
 chinroto =
     { name = "清老頭"
     , hanType = Yakuman
-    , requirement = \{ groups } -> groups == [ Triplet M1 M1 M1, Triplet M9 M9 M9, Triplet P1 P1 P1, Triplet P9 P9 P9, Pair S1 S1 ]
+    , requirement =
+        \{ groups } ->
+            let
+                allTerminals =
+                    List.concatMap Group.toTiles groups |> List.all Tile.isTerminal
+            in
+            fourTriplets groups && allTerminals
     }
 
 
@@ -884,3 +983,9 @@ churenPoto =
 members : List a -> List a -> Bool
 members xs ys =
     List.all (\x -> List.member x ys) xs
+
+
+fourTriplets : List Group -> Bool
+fourTriplets groups =
+    List.filter Group.isTriplet groups
+        |> (List.length >> (==) 4)

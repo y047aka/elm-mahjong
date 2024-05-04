@@ -1,6 +1,8 @@
 module Data.Group exposing
     ( Group(..)
     , isTriplet, isRun, isGang, isPair, isKokushi
+    , isMan, isPin, isSou, isHonor, isSuit
+    , isTerminal, isYaojiu
     , toTiles
     , FindPartialsOption(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit, keepHighestScore
     )
@@ -9,6 +11,8 @@ module Data.Group exposing
 
 @docs Group
 @docs isTriplet, isRun, isGang, isPair, isKokushi
+@docs isMan, isPin, isSou, isHonor, isSuit
+@docs isTerminal, isYaojiu
 @docs toTiles
 
 -}
@@ -78,6 +82,55 @@ isKokushi group =
 
         _ ->
             False
+
+
+isMan : Group -> Bool
+isMan group =
+    toTiles group
+        |> List.head
+        |> Maybe.map Tile.isMan
+        |> Maybe.withDefault False
+
+
+isPin : Group -> Bool
+isPin group =
+    toTiles group
+        |> List.head
+        |> Maybe.map Tile.isPin
+        |> Maybe.withDefault False
+
+
+isSou : Group -> Bool
+isSou group =
+    toTiles group
+        |> List.head
+        |> Maybe.map Tile.isSou
+        |> Maybe.withDefault False
+
+
+isHonor : Group -> Bool
+isHonor group =
+    toTiles group
+        |> List.head
+        |> Maybe.map Tile.isHonor
+        |> Maybe.withDefault False
+
+
+isSuit : Group -> Bool
+isSuit group =
+    not (isHonor group)
+
+
+isTerminal : Group -> Bool
+isTerminal group =
+    toTiles group
+        |> List.all Tile.isTerminal
+
+
+isYaojiu : Group -> Bool
+isYaojiu group =
+    toTiles group
+        |> List.all Tile.isYaojiu
 
 
 toTiles : Group -> List Tile

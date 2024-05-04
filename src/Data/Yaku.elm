@@ -219,10 +219,7 @@ tanyao : Yaku
 tanyao =
     { name = "断么九"
     , hanType = One
-    , requirement =
-        \{ groups } ->
-            List.concatMap Group.toTiles groups
-                |> List.all (\t -> not (Tile.isYaojiu t))
+    , requirement = \{ groups } -> List.all (\g -> not (Group.isYaojiu g)) groups
     }
 
 
@@ -492,11 +489,8 @@ honroutou =
     , hanType = Two
     , requirement =
         \{ groups } ->
-            let
-                allYaojiu =
-                    List.concatMap Group.toTiles groups |> List.all Tile.isYaojiu
-            in
-            fourTriplets groups && allYaojiu
+            fourTriplets groups
+                && List.all Group.isYaojiu groups
     }
 
 
@@ -844,10 +838,7 @@ tsuiso : Yaku
 tsuiso =
     { name = "字一色"
     , hanType = Yakuman
-    , requirement =
-        \{ groups } ->
-            List.concatMap Group.toTiles groups
-                |> List.all Tile.isHonor
+    , requirement = \{ groups } -> List.all Group.isHonor groups
     }
 
 
@@ -923,11 +914,8 @@ chinroto =
     , hanType = Yakuman
     , requirement =
         \{ groups } ->
-            let
-                allTerminals =
-                    List.concatMap Group.toTiles groups |> List.all Tile.isTerminal
-            in
-            fourTriplets groups && allTerminals
+            fourTriplets groups
+                && List.all Group.isTerminal groups
     }
 
 

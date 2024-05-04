@@ -246,8 +246,8 @@ ipeko =
             members [ Menqian ] situations
                 && (List.filter Group.isRun groups
                         |> gatherEquals
-                        |> List.filter (\( head, tails ) -> List.length (head :: tails) >= 2)
-                        |> (List.length >> (==) 1)
+                        |> List.Extra.count (\( head, tails ) -> List.length (head :: tails) >= 2)
+                        |> (==) 1
                    )
     }
 
@@ -373,8 +373,8 @@ toitoi =
     , hanType = Two
     , requirement =
         \{ groups } ->
-            List.filter (\g -> Group.isTriplet g || Group.isGang g) groups
-                |> (List.length >> (==) 4)
+            List.Extra.count (\g -> Group.isTriplet g || Group.isGang g) groups
+                |> (==) 4
     }
 
 
@@ -391,10 +391,7 @@ sananko : Yaku
 sananko =
     { name = "三暗刻"
     , hanType = Two
-    , requirement =
-        \{ groups } ->
-            List.filter Group.isTriplet groups
-                |> (List.length >> (==) 3)
+    , requirement = \{ groups } -> List.Extra.count Group.isTriplet groups |> (==) 3
     }
 
 
@@ -440,10 +437,7 @@ sankantsu : Yaku
 sankantsu =
     { name = "三槓子"
     , hanType = Two
-    , requirement =
-        \{ groups } ->
-            List.filter Group.isGang groups
-                |> (List.length >> (==) 3)
+    , requirement = \{ groups } -> List.Extra.count Group.isGang groups |> (==) 3
     }
 
 
@@ -472,10 +466,10 @@ shousangen =
                     List.member group [ Pair White White, Pair Green Green, Pair Red Red ]
 
                 twoDragonTriplets =
-                    List.filter isDragonTriplet groups |> (List.length >> (==) 2)
+                    List.Extra.count isDragonTriplet groups == 2
 
                 oneDragonPair =
-                    List.filter isDragonPair groups |> (List.length >> (==) 1)
+                    List.Extra.count isDragonPair groups == 1
             in
             twoDragonTriplets && oneDragonPair
     }
@@ -589,7 +583,7 @@ chiitoitsu =
     , requirement =
         \{ groups, situations } ->
             members [ Menqian, Chiitoitsu ] situations
-                && (List.filter Group.isPair groups |> (List.length >> (==) 7))
+                && (List.Extra.count Group.isPair groups == 7)
     }
 
 
@@ -617,8 +611,8 @@ ryanpeikou =
             members [ Menqian ] situations
                 && (List.filter Group.isRun groups
                         |> gatherEquals
-                        |> List.filter (\( head, tails ) -> List.length (head :: tails) >= 2)
-                        |> (List.length >> (==) 2)
+                        |> List.Extra.count (\( head, tails ) -> List.length (head :: tails) >= 2)
+                        |> (==) 2
                    )
     }
 
@@ -767,7 +761,7 @@ kokushiMusou =
     , requirement =
         \{ groups, situations } ->
             members [ Menqian, KokushiMusou ] situations
-                && (List.filter Group.isKokushi groups |> (List.length >> (==) 1))
+                && (List.Extra.count Group.isKokushi groups == 1)
     }
 
 
@@ -880,10 +874,10 @@ shosushi =
                     List.member group [ Pair East East, Pair South South, Pair West West, Pair North North ]
 
                 threeWindTriplets =
-                    List.filter isWindTriplet groups |> (List.length >> (==) 3)
+                    List.Extra.count isWindTriplet groups == 3
 
                 oneWindPair =
-                    List.filter isWindPair groups |> (List.length >> (==) 1)
+                    List.Extra.count isWindPair groups == 1
             in
             threeWindTriplets && oneWindPair
     }
@@ -950,10 +944,7 @@ sukantsu : Yaku
 sukantsu =
     { name = "四槓子"
     , hanType = Yakuman
-    , requirement =
-        \{ groups } ->
-            List.filter Group.isGang groups
-                |> (List.length >> (==) 4)
+    , requirement = \{ groups } -> List.Extra.count Group.isGang groups == 4
     }
 
 
@@ -987,5 +978,4 @@ members xs ys =
 
 fourTriplets : List Group -> Bool
 fourTriplets groups =
-    List.filter Group.isTriplet groups
-        |> (List.length >> (==) 4)
+    List.Extra.count Group.isTriplet groups == 4

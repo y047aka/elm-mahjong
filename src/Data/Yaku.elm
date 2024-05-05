@@ -614,7 +614,9 @@ chanta : Yaku
 chanta =
     { name = "混全帯么九"
     , hanType = Two_ConsiderFulouPenalty
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Run P7 P8 P9, Run S1 S2 S3, Triplet East East East, Pair White White ]
+    , requirement =
+        \{ groups } ->
+            List.all (\g -> Group.containsTerminal g || Group.isHonor g) groups
     }
 
 
@@ -716,7 +718,7 @@ junchan : Yaku
 junchan =
     { name = "純全帯么九"
     , hanType = Three_ConsiderFulouPenalty
-    , requirement = \{ groups } -> groups == [ Run M1 M2 M3, Triplet P1 P1 P1, Run P7 P8 P9, Run S1 S2 S3, Pair S9 S9 ]
+    , requirement = \{ groups } -> List.all Group.containsTerminal groups
     }
 
 

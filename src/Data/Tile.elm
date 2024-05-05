@@ -441,7 +441,7 @@ isSuit t =
 -}
 isTerminal : Tile -> Bool
 isTerminal t =
-    List.member t [ M1, M9, P1, P9, S1, S9 ]
+    List.member t [ M1, P1, S1, M9, P9, S9 ]
 
 
 {-|

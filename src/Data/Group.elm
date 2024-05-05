@@ -2,7 +2,7 @@ module Data.Group exposing
     ( Group(..)
     , isTriplet, isRun, isGang, isPair, isKokushi
     , isMan, isPin, isSou, isHonor, isSuit
-    , isTerminal, isYaojiu
+    , isTerminal, isYaojiu, containsTerminal
     , toTiles
     , FindPartialsOption(..), breakdownCartesianProduct, completionScore, consumePair, consumePartialKanchan, consumePartialRyanmenPenchan, consumeRun, consumeTriplet, findGroups, findGroupsInSuit, keepHighestScore
     )
@@ -12,7 +12,7 @@ module Data.Group exposing
 @docs Group
 @docs isTriplet, isRun, isGang, isPair, isKokushi
 @docs isMan, isPin, isSou, isHonor, isSuit
-@docs isTerminal, isYaojiu
+@docs isTerminal, isYaojiu, containsTerminal
 @docs toTiles
 
 -}
@@ -20,7 +20,7 @@ module Data.Group exposing
 import Array
 import Data.Category exposing (Category(..))
 import Data.Counter as Counter
-import Data.Tile as Tile exposing (Tile)
+import Data.Tile as Tile exposing (Tile(..))
 import List.Extra
 
 
@@ -131,6 +131,38 @@ isYaojiu : Group -> Bool
 isYaojiu group =
     toTiles group
         |> List.all Tile.isYaojiu
+
+
+containsTerminal : Group -> Bool
+containsTerminal group =
+    let
+        isOne t =
+            List.member t [ M1, P1, S1 ]
+
+        isNine t =
+            List.member t [ M9, P9, S9 ]
+    in
+    case group of
+        Triplet t1 _ _ ->
+            isOne t1 || isNine t1
+
+        Run t1 _ t3 ->
+            isOne t1 || isNine t3
+
+        Gang t1 _ _ _ ->
+            isOne t1 || isNine t1
+
+        Pair t1 _ ->
+            isOne t1 || isNine t1
+
+        PartialPenchan t1 t2 ->
+            isOne t1 || isNine t2
+
+        PartialKanchan t1 t3 ->
+            isOne t1 || isNine t3
+
+        Kokushi _ _ _ _ _ _ _ _ _ _ _ _ _ _ ->
+            List.any Tile.isTerminal (toTiles group)
 
 
 toTiles : Group -> List Tile

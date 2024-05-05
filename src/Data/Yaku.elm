@@ -94,6 +94,11 @@ type alias HandState =
     }
 
 
+check : Yaku -> HandState -> Bool
+check yaku state =
+    yaku.requirement state
+
+
 type Situation
     = SeatWind Tile
     | RoundWind Tile
@@ -112,9 +117,32 @@ type Situation
     | ChurenPoto
 
 
-check : Yaku -> HandState -> Bool
-check yaku state =
-    yaku.requirement state
+findSeatWind : List Situation -> Maybe Tile
+findSeatWind situations =
+    List.Extra.findMap
+        (\s ->
+            case s of
+                SeatWind t ->
+                    Just t
+
+                _ ->
+                    Nothing
+        )
+        situations
+
+
+findRoundWind : List Situation -> Maybe Tile
+findRoundWind situations =
+    List.Extra.findMap
+        (\s ->
+            case s of
+                RoundWind t ->
+                    Just t
+
+                _ ->
+                    Nothing
+        )
+        situations
 
 
 
@@ -187,20 +215,7 @@ yakuhai_SeatWind =
     , hanType = One
     , requirement =
         \{ groups, situations } ->
-            let
-                maybeSeatWind =
-                    List.Extra.findMap
-                        (\situation ->
-                            case situation of
-                                SeatWind t ->
-                                    Just t
-
-                                _ ->
-                                    Nothing
-                        )
-                        situations
-            in
-            maybeSeatWind
+            findSeatWind situations
                 |> Maybe.map (\wind -> List.member (Triplet wind wind wind) groups)
                 |> Maybe.withDefault False
     }
@@ -221,20 +236,7 @@ yakuhai_RoundWind =
     , hanType = One
     , requirement =
         \{ groups, situations } ->
-            let
-                maybeRoundWind =
-                    List.Extra.findMap
-                        (\situation ->
-                            case situation of
-                                RoundWind t ->
-                                    Just t
-
-                                _ ->
-                                    Nothing
-                        )
-                        situations
-            in
-            maybeRoundWind
+            findRoundWind situations
                 |> Maybe.map (\wind -> List.member (Triplet wind wind wind) groups)
                 |> Maybe.withDefault False
     }

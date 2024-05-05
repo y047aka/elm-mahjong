@@ -102,6 +102,7 @@ check yaku state =
 type Situation
     = SeatWind Tile
     | RoundWind Tile
+    | WaitType_OpenWait
     | Menqian
     | WinByTsumo
     | WinByRon
@@ -270,15 +271,43 @@ yakuhai_Sangen =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check pinfu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
-    check pinfu { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
+    check pinfu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run P7 P8 P9, Run S7 S8 S9, Pair M9 M9 ], situations = [ WaitType_OpenWait, Menqian ] } --> True
+    check pinfu { groups = [ Run M1 M2 M3, Run M4 (M5 False) M6, Run P7 P8 P9, Run S7 S8 S9, Pair North North ], situations = [ RoundWind East, SeatWind South, WaitType_OpenWait, Menqian ] } --> True
 
 -}
 pinfu : Yaku
 pinfu =
     { name = "平和"
     , hanType = One
-    , requirement = \{ situations } -> members [ Menqian ] situations
+    , requirement =
+        \{ groups, situations } ->
+            let
+                fourRuns =
+                    List.Extra.count Group.isRun groups == 4
+
+                yakuhaiWinds =
+                    List.filterMap
+                        (\s ->
+                            case s of
+                                SeatWind t ->
+                                    Just t
+
+                                RoundWind t ->
+                                    Just t
+
+                                _ ->
+                                    Nothing
+                        )
+                        situations
+
+                notYakuhaiWindPairs =
+                    List.filter (\t -> not (List.member t yakuhaiWinds)) [ East, South, West, North ]
+                        |> List.map (\t -> Pair t t)
+
+                noYakuhaiPairs =
+                    List.all (\g -> Group.isSuit g || List.member g notYakuhaiWindPairs) groups
+            in
+            members [ WaitType_OpenWait, Menqian ] situations && fourRuns && noYakuhaiPairs
     }
 
 

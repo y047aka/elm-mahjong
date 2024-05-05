@@ -1,8 +1,8 @@
 module Data.Yaku exposing
     ( Yaku
     , check
-    , menzenTsumo, reach, ippatsu, yakuhai, pinfu, tanyao, ipeko, haitei, houtei, chankan, rinshanKaihou
-    , doubleReach, renpuhai, toitoi, sananko, sanshokuDoukou, sankantsu, shousangen, honroutou, sanshokuDoujun, ittsu, chanta, chiitoitsu
+    , menzenTsumo, reach, ippatsu, yakuhai_SeatWind, yakuhai_RoundWind, yakuhai_Sangen, pinfu, tanyao, ipeko, haitei, houtei, chankan, rinshanKaihou
+    , doubleReach, toitoi, sananko, sanshokuDoukou, sankantsu, shousangen, honroutou, sanshokuDoujun, ittsu, chanta, chiitoitsu
     , ryanpeikou, honitsu, junchan
     , chinitsu
     , tenho, chiho, kokushiMusou, suanko, daisangen, ryuiso, tsuiso, shosushi, daishushi, chinroto, sukantsu, churenPoto
@@ -14,8 +14,8 @@ module Data.Yaku exposing
 @docs Yaku
 @docs check
 
-@docs menzenTsumo, reach, ippatsu, yakuhai, pinfu, tanyao, ipeko, haitei, houtei, chankan, rinshanKaihou
-@docs doubleReach, renpuhai, toitoi, sananko, sanshokuDoukou, sankantsu, shousangen, honroutou, sanshokuDoujun, ittsu, chanta, chiitoitsu
+@docs menzenTsumo, reach, ippatsu, yakuhai_SeatWind, yakuhai_RoundWind, yakuhai_Sangen, pinfu, tanyao, ipeko, haitei, houtei, chankan, rinshanKaihou
+@docs doubleReach, toitoi, sananko, sanshokuDoukou, sankantsu, shousangen, honroutou, sanshokuDoujun, ittsu, chanta, chiitoitsu
 @docs ryanpeikou, honitsu, junchan
 @docs chinitsu
 @docs tenho, chiho, kokushiMusou, suanko, daisangen, ryuiso, tsuiso, shosushi, daishushi, chinroto, sukantsu, churenPoto
@@ -95,7 +95,9 @@ type alias HandState =
 
 
 type Situation
-    = Menqian
+    = SeatWind Tile
+    | RoundWind Tile
+    | Menqian
     | WinByTsumo
     | WinByRon
     | Reach
@@ -175,15 +177,89 @@ ippatsu =
     import Data.Tile exposing (Tile(..))
     import Data.Group exposing (Group(..))
 
-    check yakuhai { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
-    check yakuhai { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> True
+    check yakuhai_SeatWind { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ SeatWind East ] } --> True
+    check yakuhai_SeatWind { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ SeatWind South ] } --> False
 
 -}
-yakuhai : Yaku
-yakuhai =
-    { name = "役牌"
+yakuhai_SeatWind : Yaku
+yakuhai_SeatWind =
+    { name = "役牌：自風牌"
     , hanType = One
-    , requirement = always True
+    , requirement =
+        \{ groups, situations } ->
+            let
+                maybeSeatWind =
+                    List.Extra.findMap
+                        (\situation ->
+                            case situation of
+                                SeatWind t ->
+                                    Just t
+
+                                _ ->
+                                    Nothing
+                        )
+                        situations
+            in
+            maybeSeatWind
+                |> Maybe.map (\wind -> List.member (Triplet wind wind wind) groups)
+                |> Maybe.withDefault False
+    }
+
+
+{-|
+
+    import Data.Tile exposing (Tile(..))
+    import Data.Group exposing (Group(..))
+
+    check yakuhai_RoundWind { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ RoundWind East ] } --> True
+    check yakuhai_RoundWind { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ RoundWind South ] } --> False
+
+-}
+yakuhai_RoundWind : Yaku
+yakuhai_RoundWind =
+    { name = "役牌：場風牌"
+    , hanType = One
+    , requirement =
+        \{ groups, situations } ->
+            let
+                maybeRoundWind =
+                    List.Extra.findMap
+                        (\situation ->
+                            case situation of
+                                RoundWind t ->
+                                    Just t
+
+                                _ ->
+                                    Nothing
+                        )
+                        situations
+            in
+            maybeRoundWind
+                |> Maybe.map (\wind -> List.member (Triplet wind wind wind) groups)
+                |> Maybe.withDefault False
+    }
+
+
+{-|
+
+        import Data.Tile exposing (Tile(..))
+        import Data.Group exposing (Group(..))
+
+        check yakuhai_Sangen { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Pair East East, Triplet White White White ], situations = [] } --> True
+        check yakuhai_Sangen { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> False
+
+-}
+yakuhai_Sangen : Yaku
+yakuhai_Sangen =
+    { name = "役牌：三元牌"
+    , hanType = One
+    , requirement =
+        \{ groups } ->
+            let
+                isDragonTriplet group =
+                    List.member group [ Triplet White White White, Triplet Green Green Green, Triplet Red Red Red ]
+            in
+            List.Extra.count isDragonTriplet groups >= 1
     }
 
 
@@ -335,23 +411,6 @@ doubleReach =
     { name = "ダブル立直"
     , hanType = Two
     , requirement = \{ situations } -> members [ Menqian, Reach ] situations
-    }
-
-
-{-|
-
-    import Data.Tile exposing (Tile(..))
-    import Data.Group exposing (Group(..))
-
-    check renpuhai { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [ Menqian ] } --> True
-    check renpuhai { groups = [ Run M1 M2 M3, Run P4 (P5 False) P6, Run S7 S8 S9, Triplet East East East, Pair White White ], situations = [] } --> True
-
--}
-renpuhai : Yaku
-renpuhai =
-    { name = "連風牌"
-    , hanType = Two
-    , requirement = always True
     }
 
 
